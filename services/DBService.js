@@ -1,5 +1,5 @@
 class DB {
-    constructor({UserModel, ProductModel, ItemModel, ProductGroupModel, SmenaModel, ProductModModel, CornerModel, io}) {
+    constructor({UserModel, ProductModel, ItemModel, ProductGroupModel, SmenaModel, ProductModModel, CornerModel, KioskModel, io}) {
         this.UserModel = UserModel
         this.ProductModel = ProductModel
         this.ProductGroupModel = ProductGroupModel
@@ -7,7 +7,11 @@ class DB {
         this.SmenaModel = SmenaModel
         this.ProductModModel = ProductModModel
         this.CornerModel = CornerModel
+        this.KioskModel = KioskModel
         this.io = io
+
+        this.token = this.token.bind(this)
+        this.auth = this.auth.bind(this)
     }
 
     async getAllUsers(){
@@ -65,6 +69,24 @@ class DB {
         return corners
     }
 
+    async getAllKiosks(){
+        const kiosks = await this.KioskModel.findAll({
+            order: [['id', 'DESC']],
+
+        })
+        return kiosks
+    }
+
+    async getKiosk(name){
+        const kiosk = await this.KioskModel.findOne({
+            where: {
+                name
+            }
+
+        })
+        return kiosk
+    }
+
     async saveProduct(data){
         if(!data.id){
             const product = await this.ProductModel.create(data)
@@ -90,6 +112,7 @@ class DB {
             product.price = data.price
             product.corner = data.corner
             product.mods = data.mods
+            product.img = data.img
             product.archive = data.archive
             product.group_id = data.group_id
             return await product.save()
@@ -110,6 +133,7 @@ class DB {
                 return await group.destroy()
             }
             group.name = data.name
+            group.img = data.img
             return await group.save()
         }
     }
@@ -131,6 +155,28 @@ class DB {
             corner.uid = data.uid
             corner.gate = data.gate
             return await corner.save()
+        }
+    }
+    async saveKiosk(data){
+        if(!data.id){
+            const kiosk = await this.KioskModel.create(data)
+            return kiosk
+        }
+        else {
+            const kiosk = await this.KioskModel.findOne({
+                where: {
+                    id: data.id
+                }
+            })
+            if(data.action === "DELETE"){
+                return await kiosk.destroy()
+            }
+            kiosk.name = data.name
+            kiosk.uid = data.uid
+            kiosk.gate = data.gate
+            kiosk.lock = data.lock
+            kiosk.key = data.key
+            return await kiosk.save()
         }
     }
 
@@ -208,6 +254,7 @@ class DB {
             mod.name = data.name
             mod.items = data.items
             mod.price = data.price
+            mod.img = data.img
             return await mod.save()
         }
     }
@@ -233,6 +280,15 @@ class DB {
         return smena
     }
 
+    token() {
+
+        function S4() {
+            return (((1 + Math.random()) * 0x10000) | 0).toString(16).substring(1);
+        }
+
+        return (S4() + S4() + "-" + S4() + "-" + S4() + "-" + S4() + "-" + S4() + S4() + S4());
+    }
+
     async auth(data){
         const {login, password} = data
         const user = await this.UserModel.findOne({
@@ -241,7 +297,42 @@ class DB {
                 password
             }
         })
+
+        if(!user) {
+            throw new Error("Auth error")
+        }
+        if(global.Users.has(user.login)){
+            return global.Users.get(user.login)
+        }else {
+            delete user.password
+            user.token = this.token()
+            global.Users.set(user.login, user)
+        }
+
         return user
+    }
+
+    async authKiosk(data){
+        const {name, key} = data
+        const kiosk = await this.KioskModel.findOne({
+            where: {
+                name,
+                key
+            }
+        })
+
+        if(!kiosk) {
+            throw new Error("Auth error")
+        }
+        if(global.Kiosks.has(kiosk.name)){
+            return global.Kiosks.get(kiosk.name)
+        }else {
+            delete kiosk.key
+            kiosk.token = this.token()
+            global.Kiosks.set(kiosk.name, kiosk)
+        }
+
+        return kiosk
     }
 }
 module.exports = DB

@@ -1,22 +1,26 @@
 const Sequelize = require("sequelize")
 
-const Product = {
+const Kiosks = {
     id: {
         type: Sequelize.DataTypes.INTEGER,
         allowNull: false,
         primaryKey: true,
         autoIncrement: true
     },
+    uid: {
+        type: Sequelize.DataTypes.STRING
+    },
     name: {
-        type: Sequelize.DataTypes.STRING,
-        allowNull: false,
+        type: Sequelize.DataTypes.STRING
     },
-
-    corner: {
-        type: Sequelize.DataTypes.STRING,
+    gate: {
+        type: Sequelize.DataTypes.STRING
     },
-    img: {
-        type: Sequelize.DataTypes.STRING,
+    key: {
+        type: Sequelize.DataTypes.STRING
+    },
+    lock: {
+        type: Sequelize.DataTypes.BOOLEAN
     },
     createdAt: {
         type: Sequelize.DataTypes.DATE,
@@ -31,4 +35,4 @@ const Product = {
         field: "updated_at"
     }
 }
-module.exports = Product
+module.exports = Kiosks

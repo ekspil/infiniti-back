@@ -4,7 +4,7 @@ const GroupDTO = require("../models/dto/group")
 const ItemDTO = require("../models/dto/item")
 const ModDTO = require("../models/dto/mod")
 const ProductDTO = require("../models/dto/product")
-const CornerDTO = require("../models/dto/corner")
+const KioskDTO = require("../models/dto/kiosk")
 
 
 
@@ -64,9 +64,9 @@ module.exports = async function (fastify, opts) {
   })
   fastify.post('/api/terminal/order/changeHidden', async (request, reply)=>{
     order.changeHidden(request.body)
-    const {status, corner, orderId, station} = request.body
+    const {status, kiosk, orderId, station} = request.body
     if (status === "DONE" && !station){
-      order.checkDone(orderId, corner)
+      order.checkDone(orderId, kiosk)
     }
     await fastify.io.emit("fullCheck", global.Orders)
     return {ok: true}
@@ -77,7 +77,7 @@ module.exports = async function (fastify, opts) {
   fastify.post('/api/terminal/order/sendStatus', async (request, reply)=>{
 
     //accepted, production, cooked, sent, done, canceled(отменен)
-    let {orderId, status, corner} = request.body
+    let {orderId, status, kiosk} = request.body
     let Id = orderId
     if(orderId.includes("-")){
       Id = (orderId.split("-"))[1]
@@ -95,8 +95,8 @@ module.exports = async function (fastify, opts) {
       return {ok: true, comment: "Статус не отправлен, заказ уже завершен или отменен"}
     }
 
-    if(status.toLowerCase() === "done" && corner) {
-      const checkDone = order.checkDone(orderId, corner)
+    if(status.toLowerCase() === "done" && kiosk) {
+      const checkDone = order.checkDone(orderId, kiosk)
       if(!checkDone) {
         await fastify.io.emit("fullCheck", global.Orders)
         return {ok: true, comment: "Статус не отправлен, еще есть не завершенные корнеры"}
@@ -183,6 +183,14 @@ module.exports = async function (fastify, opts) {
     return new UserDTO(user)
   })
 
+  fastify.post('/api/terminal/kiosks/auth', async (request, reply)=>{
+    const kiosk = await db.authKiosk(request.body)
+    if(!kiosk){
+      return null
+    }
+    return new KioskDTO(kiosk)
+  })
+
   fastify.get('/api/terminal/users/get', async (request, reply) => {
     const users = await db.getAllUsers()
     return users.map(key => new UserDTO(key))
@@ -199,13 +207,26 @@ module.exports = async function (fastify, opts) {
     const product = await db.saveProduct(request.body)
     return new ProductDTO(product)
   })
-  fastify.get('/api/terminal/corners/get', async (request, reply) => {
-    const products = await db.getAllCorners()
-    return products.map(key => new CornerDTO(key))
+  fastify.get('/api/terminal/kiosks/get', async (request, reply) => {
+    const products = await db.getAllKiosks()
+    return products.map(key => new KioskDTO(key))
   })
-  fastify.post('/api/terminal/corners/save', async (request, reply) => {
-    const corner = await db.saveCorner(request.body)
-    return new CornerDTO(corner)
+  fastify.get('/api/terminal/kiosks/get/:name', async (request, reply) => {
+    const name = request.params.name
+    const kiosk = await db.getKiosk(name)
+
+
+    kiosk.command = global.Commands.get(name)
+    global.Commands.delete(name)
+    return new KioskDTO(kiosk)
+  })
+  fastify.get('/api/terminal/kiosks/set/:name/:command', async (request, reply) => {
+    global.Commands.set(request.params.name, request.params.command)
+    return true
+  })
+  fastify.post('/api/terminal/kiosks/save', async (request, reply) => {
+    const kiosk = await db.saveKiosk(request.body)
+    return new KioskDTO(kiosk)
   })
   fastify.get('/api/terminal/groups/get', async (request, reply) => {
     const groups = await db.getAllGroups()

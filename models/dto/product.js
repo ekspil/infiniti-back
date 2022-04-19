@@ -2,7 +2,7 @@
 
 class Product {
 
-    constructor({id, code, name, corner, items, station, price, group_id, mods, archive}) {
+    constructor({id, code, name, corner, items, station, price, group_id, mods, archive, img}) {
         this.id = id
         this.code = code
         this.corner = corner
@@ -12,6 +12,7 @@ class Product {
         this.items = items
         this.mods = mods
         this.archive = archive
+        this.img = img
         this.group_id = group_id
     }
 }

@@ -5,6 +5,7 @@ const AutoLoad = require('fastify-autoload')
 const Sequelize = require("sequelize")
 const fetch = require("node-fetch")
 const cron = require("node-cron")
+const fileUpload = require('fastify-file-upload')
 
 module.exports = async function (fastify, opts) {
   // Place here your custom code!
@@ -28,11 +29,16 @@ module.exports = async function (fastify, opts) {
   const OrderItems = require("./models/sequelize/OrderItems")
   const ProductMods = require("./models/sequelize/ProductMods")
   const Corners = require("./models/sequelize/Corners")
+  const Kiosks = require("./models/sequelize/Kiosks")
   global.Orders = []
   global.KassaOrders = []
   global.Products = []
   global.Items = []
   global.K = 1
+
+  global.Commands = new Map()
+  global.Users = new Map()
+  global.Kiosks = new Map()
 
 
 
@@ -47,6 +53,7 @@ module.exports = async function (fastify, opts) {
   const OrderItemsModel = sequelize.define("order_items", OrderItems)
   const ProductModModel = sequelize.define("product_mods", ProductMods)
   const CornerModel = sequelize.define("corners", Corners)
+  const KioskModel = sequelize.define("kiosks", Kiosks)
 
   ProductModel.belongsTo(ProductGroupModel, {
     foreignKey: "group_id",
@@ -158,6 +165,7 @@ module.exports = async function (fastify, opts) {
   })
 
   opts.db = new DB({
+    KioskModel,
     UserModel,
     ItemModel,
     ProductModel,
