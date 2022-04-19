@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kiosk-back
+  namespace: production
+  labels:
+    app: kiosk-back
+spec:
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 50%
+      maxSurge: 50%
+  selector:
+    matchLabels:
+      app: kiosk-back
+  template:
+    metadata:
+      namespace: production
+      labels:
+        app: kiosk-back
+    spec:
+      containers:
+        - name: kiosk-back
+          image: cr.yandex/crpbchff05ai3nceeln1/kiosk-back:1.0.0
+          ports:
+            - containerPort: 3000
+          readinessProbe:
+            httpGet:
+              path: /root
+              port: 3000
+            initialDelaySeconds: 30
+            periodSeconds: 5
+            successThreshold: 1
+            failureThreshold: 3
+          envFrom:
+            - configMapRef:
+                name: kiosk-back-config
+      imagePullSecrets:
+        - name: gitlabregistrycred
