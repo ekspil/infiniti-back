@@ -5,7 +5,6 @@ const AutoLoad = require('fastify-autoload')
 const Sequelize = require("sequelize")
 const fetch = require("node-fetch")
 const cron = require("node-cron")
-const fileUpload = require('fastify-file-upload')
 
 module.exports = async function (fastify, opts) {
   // Place here your custom code!
@@ -13,7 +12,14 @@ module.exports = async function (fastify, opts) {
   const sequelizeOptions = {
     host: process.env.POSTGRES_HOST,
     dialect: "postgres",
-    ssl: false,
+    ssl: true,
+    dialectOptions: {
+      ssl: {
+        require: true,
+        rejectUnauthorized: false // <<<<<<< YOU NEED THIS
+      }
+    },
+    port: process.env.POSTGRES_PORT,
     logging: !!Number(process.env.SQL_LOGS)
   }
   const sequelize = new Sequelize(process.env.POSTGRES_DB, process.env.POSTGRES_USER, process.env.POSTGRES_PASSWORD, sequelizeOptions)
