@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: kiosk-back
-  namespace: default
+  namespace: production
   labels:
     app: kiosk-back
 spec:
@@ -17,7 +17,7 @@ spec:
       app: kiosk-back
   template:
     metadata:
-      namespace: default
+      namespace: production
       labels:
         app: kiosk-back
     spec:
