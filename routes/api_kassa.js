@@ -11,11 +11,37 @@ const ProductDTO = require("../models/dto/product")
 
 module.exports = async function (fastify, opts) {
 
-  const {order, db, fetch, kassa} = opts
+  const {order, db, fetch, kassa, atol} = opts
 
 
   fastify.get('/api/kassa/create', async (request, reply) => {
     return kassa.newOrder()
+  })
+
+
+  fastify.post('/api/kiosk/create', async (request, reply) => {
+    const {bill, pay} = request.body
+    try{
+
+      const order = await kassa.createOrder(bill, pay)
+      if(!order){
+        throw new Error("Ошибка записи заказа в БД")
+      }
+      const check = await atol.billAction({order, pay, bill}, "sell")
+      return {ok: true, order, check}
+
+    }catch (e) {
+      return {ok: false, message: e.message}
+    }
+
+
+  })
+
+  fastify.post('/api/kiosk/billCallBack', async (request, reply) => {
+    const json = JSON.stringify(request.body)
+    console.log(json)
+
+
   })
 
   fastify.get('/api/kassa/getOrder/:orderId', async (request, reply) => {

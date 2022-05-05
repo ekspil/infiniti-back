@@ -1,6 +1,6 @@
 {
-  "name": "terminal_eda",
-  "version": "1.0.4",
+  "name": "kiosk-back",
+  "version": "1.0.5",
   "description": "",
   "main": "app.js",
   "directories": {

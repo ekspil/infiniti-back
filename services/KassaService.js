@@ -9,8 +9,6 @@ class Order {
         this.OrderModel = OrderModel
         this.OrderItemsModel = OrderItemsModel
         this.io = io
-        this.newOrder = this.newOrder.bind(this)
-        this.print = this.print.bind(this)
         this.guid = this.guid.bind(this)
         this.ExecuteCommand = this.ExecuteCommand.bind(this)
     }
@@ -60,147 +58,6 @@ class Order {
         return (S4() + S4() + "-" + S4() + "-" + S4() + "-" + S4() + "-" + S4() + S4() + S4());
     }
 
-    async print(order, printer){
-        // Подготовка данных команды
-        const Data = {
-            Command: "PrintDocument",
-            NumDevice: printer || 0,
-            IsFiscalCheck: false,
-            NotPrint: false,
-            IdCommand: this.guid(),
-
-            // Строки чека
-            CheckStrings: [
-                {
-                    PrintImage: {
-                        //Картинка в Base64. Картинка будет преобразована в 2-х цветное изображение- поэтому лучше посылать 2-х цветный bmp
-                        Image: "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CCHD4AAAAAASAH/AEAAA//4AAAAAAAAAAAOBwP/5/H4488/gAAAAAAgAf4AKAAD//gAAAAAAAAAAA8Hgf/j8fzzxx+AAAAAAAUB/wCAAAD/8AAAAAAAAAAADgcD/+fx/OOPP4AAAAAAQEP/AggAAH/AAAAAAAAAAAAPPA44/AAHg8ccAAAAAABAgf8ECAAAH4AAAAAAAAAAAA44Hnn8AAcDzzwAAAAAACAT/xAIAAAOAAAAAAAAAAAADzwOefwABwPPPAAAAAAAQBH/AAAAAA8AAAAAAAAAAAAP+AP/5//AH/n/gAAAAAAAB/5ACAAADgAAAAAAAAAAAA/8Af/j/+Af+P+AAAAAACAF/4AIAAAPAAAAAAAAAAAAD/wD/+f/4B/5/4AAAAAAIAP/AAgAAA4AAAAAAAAAAAAAB/AHA4H/ngADgAAAAAAgAf8AEAAADwAAAAAAAAAAAAAH8A8Hgf8cAAeAAAAAAAAB/gARgAAfAAAwAAAAAAAAAAfwDwOB/54AB4AAAAAAFAH/ACHwAA8AAPAAAAAAAAAB+P//P4H/HA8/gAAAAAAAAf8BAfwAHwAH8AAAAAAAAAH8//8fgf+eBx+AAAAAAAUB/wJB/wAPAB/wAAAAAAAAAfz//z+B/54PP4AAAAAAIEP+Agn/wB8Af/AAAAAAAAAB/54AH/AH88AeAAAAAAAggf8ECH/4DwH/4AAAAAAAAAH/ngA/8AfjwDwAAAAAACgT/xAgP/wfB/+AAAAAAAAAAf+eAB/wB/PAPAAAAAAAACH/AAgP/58f/wAAAAAAAAAOf/+B4B/AH//gAAAAAABSB/5BSAf////+AAAAAAAAAA8//8DgD+Af/+AAAAAAAAIJ/4EIA/////wAAAAAAAAADj//wOAPwB//4AAAAAAAQUP/CAAB////8AAAAAAAAAAAAAAHnHg8AAAAAAAAAABAQ/8CCAB////gAAAAAAAAAAAAAA88cDgAAAAAAAAAACAB/xAIAD///4AAAAAAAAAAAAAABxxwPAAAAAAAAAAAQBH/AAgAH///AAAAAAAAAAAP//+PPHHvH///gAAAAAAAC/5AAAAP//4AAAAAAAAAAA///8ccceef//+AAAAAACAC/IAIAAP//AAAAAAAAAAAD///zzxxxx///4AAAAAAIAJ6AAgAAf/wAAAAAAAAAAAP///HH+H/n///gAAAAAAgANUAEAAAf+AAAAAAAAAAAA4AA88/gf8eAAeAAAAAACgDKgAQAAB/gAAAAAAAAAAADwADxx+B/54AA4AAAAAACAHvACAAAB+AAAAAAAAAAAAOP+PPP/2/Hn/ngAAAAAABA/4CgAAAP4AAAAAAAAAAAA8/88ccfweeP+OAAAAAAAIB/wIAAAAfgAAAAAAAAAAADj/jzzx+Bx5/54AAAAAAAEH/AgAAAD+AAAAAAAAAAAAPP/PHH//DHj/jgAAAAAABgf8EAAAAH4AAAAAAAAAAAA4/488/j8Aef+eAAAAAAP+f/9f8AAA/gAAAAAAAAAAADz/zxx+P4B4/44AAAAAA//P/j/wAAB+AAAAAAAAAAAAOP+PPP4/CHn/ngAAAAAD/6/1//AAAP4AAAAAAAAAAAA8/88cfgeeeP+OAAAAAAP/9fX/8AAAfgAAAAAAAAAAADj/jzz+Bxx5/54AAAAAA//15//wAAD+AAAAAAAAAAAAPP+PHH+HvHj/DgAAAAAD//7P//AAAH4AAAAAAAAAAAA4AA8A/8DgeAAeAAAAAAP//F//8AAAfAAAAAAAAAAAADwADwB/wPB4AA4AAAAAA///X//wAAA8AAAAAAAAAAAAP///AH/A+H///gAAAAAAAAAAAAAAAAAAAAAAAAAAAAA///8AD8Aef//+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAD///wAPwBx///4AAAAAAAAAAAAAAAAAAAAAAAAAAAAAP///AA/AHH///gAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAB/A/OBsPfwzhw/AYDA5+H4AAAAAAAAAAAAAAAAAAAAAH+P84Owx/jMHH+BgMDf9/gAAAAAAAAAAAAAAAAAAAAAYd45/zHGHMY84cGAf9w2DAAAAAAAAAAAAAAAAAAAAABh2Bn/M4YMzHzAwYB/gDAcAAAAAAAAAAAAAAAAAAAAAH+YDOc/hgzGbcfB/nuD8PwAAAAAAAAAAAAAAAAAAAAAf7gc7j/GDs7tx8H+Mw/j+AAAAAAAAAAAAAAAAAAAAAB7mAxuOOYOz8zAAcc7DwfAAAAAAAAAAAAAAAAAAAAAAGHYGHwwZgzPjMABgz8YBgAAAAAAAAAAAAAAAAAAAAAAYcw4PDhmPMeMYcGHHhx3HAAAAAAAAAAAAAAAAAAAAAB/j/A4P+f4zwx/gf4eH+f4AAAAAAAAAAAAAAAAAAAAAH8H4Dg/x+DGDD8B/g4H4fAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMAwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAwDgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAQAADAOAAAAAAAAAAAAAAAAAABAAAAAAAAAAAADg4fwH8YDv/4fgAMYGP8Y4MAccB+Bw/gwOAAAAAAAAAMDD/g/5gM//n/ABzg5/7ngwBxwP8GH/HAwAAAAAAAAA4OeHHjnVxwYcOADGBjDuPDAHDy44c8OMDAAAAAAAAADAxgc4Ef+HDjgcAc4OcG58MAcP/DBjA5wMAAAAAAAAAODmA7gA/4OGOAwfxgYwdj4wBwf8OHMBzAwAAAAAAAAAwM4DsADjgw4wDH/P/nXudzAHBxg4ZwHf/AAAAAAAAADg7gG4AHMDhjAM/8f+P+YzsAcDOBh3Ac/8AAAAAAAAAMDOA7gAdwMOMBzBzi5/jnOwBwO4OGcBnBwAAAAAAAAA4OcDmAA/A4Y4HMDGBjAGMfAHAfAYcwHMDAAAAAAAAADAxwccGD4Djjw5wc4OcA5w8AcB8Dhjg5wMAAAAAAAAAP/j/w/4HgP+H/jAxgYwBjBwP/DwH/H/DA4AAAAAAAAA/8H8D/AcA/4P8cDODnAOcHB/4OA/4P4cHAAAAAAAAAAkgGgBwAQAkgHAAEIAAAAQEBJAAAkgNAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAcAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAdwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABhAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
-                    },
-                },
-                { PrintText: { Text: "<<->>" }, },
-                { PrintText: { Text: "<<->>" }, },
-                {
-                    PrintText: {
-                        Text: ">#0#< \"TERMINAL E\"",
-                        Font: 1, // 1-4, 0 - по настройкам ККМ
-                        Intensity: 15, // 1-15, 0 - по настройкам ККМ
-                    },
-                },
-                { PrintText: { Text: "<<->>" }, },
-                { PrintText: { Text: "<<->>" }, },
-                {
-                    PrintText: {
-                        Text: ">#0#< РЕЙС: " + order.dataValues.route,
-                        Font: 1, // 1-4, 0 - по настройкам ККМ
-                        Intensity: 15, // 1-15, 0 - по настройкам ККМ
-                    },
-                },
-                { PrintText: { Text: "<<->>" }, },
-                { PrintText: { Text: "<<->>" }, },
-                { PrintText: { Text: "Вылет/Прилет" }, },
-
-            ],
-        };
-        let cornerArray = []
-
-        for(let pos of order.positions){
-            let c = cornerArray.find(i => i === pos.corner)
-            if(!c) cornerArray.push(pos.corner)
-        }
-
-        for(let cor of cornerArray) {
-            let string = {
-                        PrintText: {
-                            Text: "<#1#>> Владивосток/"+String(cor).toUpperCase() ,
-                            Font: 2, // 1-4, 0 - по настройкам ККМ
-                            Intensity: 15, // 1-15, 0 - по настройкам ККМ
-                        },
-                    }
-            Data.CheckStrings.push(string)
-        }
-
-        Data.CheckStrings.push({
-            PrintText: {
-                Text: "<#1#>> Проверьте правильность выхода на посадку",
-                Font: 3, // 1-4, 0 - по настройкам ККМ
-                Intensity: 15, // 1-15, 0 - по настройкам ККМ
-            },
-        })
-
-        Data.CheckStrings.push({ PrintText: { Text: "<<->>" }, })
-        Data.CheckStrings.push({ PrintText: { Text: "<<->>" }, })
-        Data.CheckStrings.push({ PrintText: { Text: "<<->>" }, })
-
-
-
-
-
-        for(let pos of order.positions){
-
-            const string = {
-                PrintText: {
-                    Text: pos.name + "<#1#>"+ pos.price + "  " + pos.count + "  " + (pos.price * pos.count).toFixed(1) + " руб"
-                },
-            }
-            Data.CheckStrings.push(string)
-        }
-
-
-        Data.CheckStrings.push({ PrintText: { Text: "<<->>" }, })
-
-        let  summa = order.positions.reduce((sum, current) => {
-            return sum + current.count * current.price
-        }, 0);
-        Data.CheckStrings.push({
-            PrintText: {
-                Text: "<#1#>>ИТОГО: "+summa.toFixed(1)+" руб." ,
-                Font: 2, // 1-4, 0 - по настройкам ККМ
-                Intensity: 15, // 1-15, 0 - по настройкам ККМ
-            },
-        })
-
-        const result = await fetch(`http://${process.env.KKM_SERVER}/Execute`, {
-            method: 'post',
-            body: JSON.stringify(Data) ,
-            headers: {
-                'Content-Type': 'application/json',
-                "Authorization": "Basic " + Buffer.from(process.env.KKM_USER + ":" + process.env.KKM_PASSWORD).toString('base64')  },
-        })
-        const json = await result.json()
-        return json
-    }
-
-    async newOrder(type){
-        if(!type) type = "IN"
-        const order = await this.OrderModel.create()
-        order.route = Number(String(order.id).slice(-3, 999))
-        //
-        // const newOrder = {
-        //     id: "T-"+order.route,
-        //     die: 0,
-        //     alarm: 0,
-        //     action: "NEW",
-        //     payed: 0,
-        //     ready: 0,
-        //     takeOut: 0,
-        //     type: type || "IN",
-        //     source: "KASSA",
-        //     flag: "",
-        //     amount: 0,
-        //     guestName: "",
-        //     extId: "",
-        //     text: "",
-        //     pin: "",
-        //     cornerReady: [],
-        //     hidden: [],
-        //     positions: []
-        // }
-        // global.Orders.push(newOrder)
-
-        order.type = type || "IN"
-        return await order.save()
-
-    }
 
     async getOrder(route){
         const order = await this.OrderModel.findOne({
@@ -237,24 +94,17 @@ class Order {
 
     }
 
-    async update(data, route, printer){
+    async createOrder(data, pay){
         return this.OrderModel.sequelize.transaction(async (transaction) => {
-            const order = await this.OrderModel.findOne({
-                where: {
-                    route: route
-                },
-                order:[
-                    ["id", "DESC"]
-                ],
-                transaction
-            })
-            if(!order) return {ok: false, error: "Order not found"}
-            await this.OrderItemsModel.destroy({
-                where: {
-                    order_id: order.id
-                },
-                transaction
-            })
+            const orderDTO = {
+                type: data.type,
+                status: "PAYED",
+                RRNCode: pay.RRNCode,
+                AuthorizationCode: pay.AuthorizationCode,
+
+            }
+
+            const order = await this.OrderModel.create(orderDTO, {transaction})
             const itemsDTO = data.items.map(item => {
                 item.order_id = order.id
                 item.item_id = item.id
@@ -263,32 +113,8 @@ class Order {
             })
 
             await this.OrderItemsModel.bulkCreate(itemsDTO, {transaction})
-            order.type = data.type
-            order.status = data.status
-            // const orderGlobal = global.Orders.find(order => order.id === "T-"+ data.route);
-            // orderGlobal.status = data.status
-            // orderGlobal.type = data.type
-            // orderGlobal.positions = data.items.map(p => {
-            //     if(!p.code) return p
-            //     const pos = global.Products.find(item => item.code === p.code)
-            //     if(pos) {
-            //         p.name = pos.name
-            //         p.corner = pos.corner
-            //         const c = orderGlobal.cornerReady.find(i => i.corner === pos.corner)
-            //         if(!c) orderGlobal.cornerReady.push({ corner: pos.corner, status: "NOTREADY" })
-            //
-            //     }
-            //     return p
-            // })
-            await order.save({transaction})
-            if(data.notPrint === true) return true
-            try{
-                return await this.print({...order, positions: itemsDTO }, printer)
-            }catch (e) {
-                console.log("Can't find printer ip: "+process.env.KKM_SERVER + " . Printer: "+printer)
-                return false
-            }
-            return true
+
+            return order
 
         })
 

@@ -12,10 +12,10 @@ module.exports = async function (fastify, opts) {
   const sequelizeOptions = {
     host: process.env.POSTGRES_HOST,
     dialect: "postgres",
-    ssl: true,
+    ssl: false,
     dialectOptions: {
       ssl: {
-        require: true,
+        require: false,
         rejectUnauthorized: false // <<<<<<< YOU NEED THIS
       }
     },
@@ -128,11 +128,12 @@ module.exports = async function (fastify, opts) {
   const DB = require("./services/DBService")
   const Schedule = require("./services/ScheduleService")
   const Darall = require("./services/MailService")
+  const Atol = require("./services/AtolService")
 
 
 
 
-  await fastify.register(require('@guivic/fastify-socket.io'), {path: '/io', origins: '*:*'}, (error) => console.error(error));
+  await fastify.register(require('@guivic/fastify-socket.io'), {path: '/io', origins: ['*:*']}, (error) => console.error(error));
   // Do not touch the following lines
   fastify.io.origins('*:*')
 
@@ -157,6 +158,19 @@ module.exports = async function (fastify, opts) {
   })
   opts.darall = new Darall()
   opts.kassa = new Kassa({
+    UserModel,
+    ItemModel,
+    ProductModel,
+    ProductGroupModel,
+    SmenaModel,
+    StatModel,
+    OrderModel,
+    OrderItemsModel,
+    TimerModel,
+    CornerModel,
+    io: fastify.io
+  })
+  opts.atol = new Atol({
     UserModel,
     ItemModel,
     ProductModel,
