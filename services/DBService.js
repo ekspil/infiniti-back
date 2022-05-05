@@ -1,5 +1,5 @@
 class DB {
-    constructor({UserModel, ProductModel, ItemModel, ProductGroupModel, SmenaModel, ProductModModel, CornerModel, KioskModel, io}) {
+    constructor({UserModel, ProductModel, ItemModel, ProductGroupModel, SmenaModel, ProductModModel, CornerModel, KioskModel, HelperModel, io}) {
         this.UserModel = UserModel
         this.ProductModel = ProductModel
         this.ProductGroupModel = ProductGroupModel
@@ -8,6 +8,7 @@ class DB {
         this.ProductModModel = ProductModModel
         this.CornerModel = CornerModel
         this.KioskModel = KioskModel
+        this.HelperModel = HelperModel
         this.io = io
 
         this.token = this.token.bind(this)
@@ -60,6 +61,14 @@ class DB {
             order: [['id', 'DESC']]
         })
         return mods
+    }
+
+
+    async getAllHelpers(){
+        const helpers = await this.HelperModel.findAll({
+            order: [['id', 'DESC']]
+        })
+        return helpers
     }
 
     async getAllCorners(){
@@ -256,6 +265,30 @@ class DB {
             mod.price = data.price
             mod.img = data.img
             return await mod.save()
+        }
+    }
+    async saveHelper(data){
+        if(!data.id){
+            const helper = await this.HelperModel.create(data)
+            return helper
+        }
+        else {
+            const helper = await this.HelperModel.findOne({
+                where: {
+                    id: data.id
+                }
+            })
+
+            if(data.action === "DELETE"){
+                return await helper.destroy()
+            }
+            helper.name = data.name
+            helper.items = data.items
+            helper.price = data.price
+            helper.img = data.img
+            helper.exclude = data.exclude
+            helper.priority = data.priority
+            return await helper.save()
         }
     }
 

@@ -5,6 +5,7 @@ const ItemDTO = require("../models/dto/item")
 const ModDTO = require("../models/dto/mod")
 const ProductDTO = require("../models/dto/product")
 const KioskDTO = require("../models/dto/kiosk")
+const HelperDTO = require("../models/dto/helper")
 
 
 
@@ -224,10 +225,12 @@ module.exports = async function (fastify, opts) {
     global.Commands.set(request.params.name, request.params.command)
     return true
   })
+
   fastify.post('/api/terminal/kiosks/save', async (request, reply) => {
     const kiosk = await db.saveKiosk(request.body)
     return new KioskDTO(kiosk)
   })
+
   fastify.get('/api/terminal/groups/get', async (request, reply) => {
     const groups = await db.getAllGroups()
     return groups.map(key => new GroupDTO(key))
@@ -240,6 +243,19 @@ module.exports = async function (fastify, opts) {
     const mods = await db.getAllMods()
     return mods.map(key => new ModDTO(key))
   })
+  /////Helper
+  fastify.get('/api/kiosk/helpers/get', async (request, reply) => {
+    const mods = await db.getAllHelpers()
+    return mods.map(key => new HelperDTO(key))
+  })
+
+  fastify.post('/api/kiosk/helpers/save', async (request, reply) => {
+    const item = await db.saveHelper(request.body)
+    return new HelperDTO(item)
+  })
+
+  ////////////
+
   fastify.post('/api/terminal/items/save', async (request, reply) => {
     const item = await db.saveItem(request.body)
     return new ItemDTO(item)
