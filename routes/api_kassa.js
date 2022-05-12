@@ -41,6 +41,7 @@ module.exports = async function (fastify, opts) {
     const json = JSON.stringify(request.body)
     console.log(json)
 
+    //const data = {"uuid":"4d4a8842-86fd-48fd-a3f8-a76e6a92c70c","timestamp":"07.05.2022 10:51:43","callback_url":"https://api.rb24.ru/api/kiosk/billCallBack","status":"done","group_code":"delivery-rb24-ru_11624","daemon_code":"nextserver","device_code":"KKT005531","external_id":"rb_kiosk_28","error":null,"payload":{"fiscal_receipt_number":31,"shift_number":668,"receipt_datetime":"07.05.2022 10:50:00","total":1,"fn_number":"9287440300789820","ecr_registration_number":"0003039335044252","fiscal_document_number":19671,"fiscal_document_attribute":3414645016,"fns_site":"https://www.nalog.ru/rn77/","ofd_inn":"7605016030"}}
 
   })
 

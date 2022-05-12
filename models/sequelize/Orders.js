@@ -10,6 +10,10 @@ const Order = {
     route: {
         type: Sequelize.DataTypes.INTEGER,
     },
+    kioskId: {
+        type: Sequelize.DataTypes.INTEGER,
+        field: "kiosk_id"
+    },
     sum: {
         type: Sequelize.DataTypes.FLOAT,
     },

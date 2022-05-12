@@ -172,6 +172,7 @@ module.exports = async function (fastify, opts) {
     TimerModel,
     CornerModel,
     HelperModel,
+    KioskModel,
     io: fastify.io
   })
   opts.atol = new Atol({

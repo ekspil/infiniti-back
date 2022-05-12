@@ -2,12 +2,13 @@ const ItemDTO = require("../models/dto/item")
 const fetch = require("node-fetch")
 
 class Order {
-    constructor({UserModel, ProductModel, ItemModel, OrderModel, OrderItemsModel, io}) {
+    constructor({UserModel, ProductModel, ItemModel, OrderModel, OrderItemsModel, KioskModel, io}) {
         this.UserModel = UserModel
         this.ProductModel = ProductModel
         this.ItemModel = ItemModel
         this.OrderModel = OrderModel
         this.OrderItemsModel = OrderItemsModel
+        this.Kiosk = KioskModel
         this.io = io
         this.guid = this.guid.bind(this)
         this.ExecuteCommand = this.ExecuteCommand.bind(this)
@@ -96,11 +97,21 @@ class Order {
 
     async createOrder(data, pay){
         return this.OrderModel.sequelize.transaction(async (transaction) => {
+            const kiosk = this.Kiosk.findOne({
+                where: {
+                    name: data.kiosk
+                }
+            })
+            if(!kiosk){
+                throw new Error("KIOSK_NOT_FOUNT")
+            }
             const orderDTO = {
                 type: data.type,
                 status: "PAYED",
                 RRNCode: pay.RRNCode,
                 AuthorizationCode: pay.AuthorizationCode,
+                payType: "CASHLESS",
+                kioskId: kiosk.id
 
             }
 

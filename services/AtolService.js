@@ -70,8 +70,7 @@ class AtolService {
           },
           receipt: {
               client: {
-                  email: "client@infiniti-group.ru",
-                  phone: "+70002410085",
+                  email: bill.clientEmail || "client@infiniti-group.ru",
               },
               company: {
                   email: "it@infiniti-group.ru",
