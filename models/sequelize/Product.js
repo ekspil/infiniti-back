@@ -35,6 +35,19 @@ const Product = {
     archive: {
         type: Sequelize.DataTypes.BOOLEAN,
     },
+    hidden: {
+        type: Sequelize.DataTypes.BOOLEAN,
+    },
+    blocked: {
+        type: Sequelize.DataTypes.BOOLEAN,
+    },
+    coupon: {
+        type: Sequelize.DataTypes.STRING,
+    },
+    couponPrice: {
+        type: Sequelize.DataTypes.FLOAT,
+        field: "coupon_price"
+    },
     createdAt: {
         type: Sequelize.DataTypes.DATE,
         allowNull: true,

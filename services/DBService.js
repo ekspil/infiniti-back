@@ -124,6 +124,9 @@ class DB {
             product.img = data.img
             product.archive = data.archive
             product.group_id = data.group_id
+            product.coupon = data.coupon
+            product.couponPrice = data.couponPrice
+            product.hidden = data.hidden
             return await product.save()
         }
     }
