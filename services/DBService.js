@@ -127,6 +127,7 @@ class DB {
             product.coupon = data.coupon
             product.couponPrice = data.couponPrice
             product.hidden = data.hidden
+            product.priority = data.priority
             return await product.save()
         }
     }

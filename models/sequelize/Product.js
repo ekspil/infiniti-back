@@ -32,6 +32,9 @@ const Product = {
     station: {
         type: Sequelize.DataTypes.INTEGER,
     },
+    priority: {
+        type: Sequelize.DataTypes.INTEGER,
+    },
     archive: {
         type: Sequelize.DataTypes.BOOLEAN,
     },
