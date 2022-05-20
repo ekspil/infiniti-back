@@ -97,7 +97,7 @@ class Order {
 
     async createOrder(data, pay){
         return this.OrderModel.sequelize.transaction(async (transaction) => {
-            const kiosk = this.Kiosk.findOne({
+            const kiosk = await this.Kiosk.findOne({
                 where: {
                     name: data.kiosk
                 }
@@ -105,13 +105,18 @@ class Order {
             if(!kiosk){
                 throw new Error("KIOSK_NOT_FOUNT")
             }
+            let sum = data.items.reduce((sum, current) => {
+                return sum + current.count * current.price
+            }, 0);
+
             const orderDTO = {
                 type: data.type,
                 status: "PAYED",
                 RRNCode: pay.RRNCode,
                 AuthorizationCode: pay.AuthorizationCode,
                 payType: "CASHLESS",
-                kioskId: kiosk.id
+                kioskId: kiosk.id,
+                sum
 
             }
 
