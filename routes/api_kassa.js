@@ -45,8 +45,8 @@ module.exports = async function (fastify, opts) {
 
   })
 
-  fastify.get('/api/kassa/getOrder/:orderId', async (request, reply) => {
-    return kassa.getOrder(request.params.orderId)
+  fastify.get('/api/kassa/getOrder/:orderId/:kioskId', async (request, reply) => {
+    return kassa.getOrder(request.params.orderId, request.params.kioskId)
   })
 
   fastify.get('/api/eo/getImgs', async (request, reply) => {

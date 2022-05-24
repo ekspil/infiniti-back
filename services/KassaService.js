@@ -60,10 +60,11 @@ class Order {
     }
 
 
-    async getOrder(route){
+    async getOrder(route, kioskId){
         const order = await this.OrderModel.findOne({
             where: {
-                route: route
+                route: route,
+                kioskId
             },
             order:[
                 ["id", "DESC"]
@@ -85,12 +86,14 @@ class Order {
             id: order.id,
             route: order.route,
             status: order.status,
+            sum: order.sum,
             type: order.type,
             items: items || [],
             createdAt: order.createdAt,
             payType: order.payType,
             AuthorizationCode: order.AuthorizationCode,
-            RRNCode: order.RRNCode
+            RRNCode: order.RRNCode,
+            kioskId: order.kioskId
         }
 
     }
@@ -103,7 +106,7 @@ class Order {
                 }
             })
             if(!kiosk){
-                throw new Error("KIOSK_NOT_FOUNT")
+                throw new Error("KIOSK_NOT_FOUND")
             }
             let sum = data.items.reduce((sum, current) => {
                 return sum + current.count * current.price
@@ -121,6 +124,7 @@ class Order {
             }
 
             const order = await this.OrderModel.create(orderDTO, {transaction})
+            order.route = Number(String(order.id).slice(-4))
             const itemsDTO = data.items.map(item => {
                 item.order_id = order.id
                 item.item_id = item.id
@@ -129,6 +133,7 @@ class Order {
             })
 
             await this.OrderItemsModel.bulkCreate(itemsDTO, {transaction})
+            await order.save()
 
             return order
 
