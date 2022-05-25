@@ -64,7 +64,8 @@ class Order {
         const order = await this.OrderModel.findOne({
             where: {
                 route: route,
-                kioskId
+                kioskId,
+                status: "PAYED"
             },
             order:[
                 ["id", "DESC"]
@@ -144,7 +145,7 @@ class Order {
     async setCanceled(data){
             const order = await this.OrderModel.findOne({
                 where: {
-                    route: data.route
+                    id: data.id
                 },
                 order: [
                     ["id", "DESC"]
@@ -152,9 +153,7 @@ class Order {
             })
             if (!order) return {ok: false, error: "Order not found"}
             order.status = "CANCELED"
-            await order.save()
-
-            return {ok: true}
+            return await order.save()
 
     }
 

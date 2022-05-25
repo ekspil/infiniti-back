@@ -37,6 +37,25 @@ module.exports = async function (fastify, opts) {
 
   })
 
+
+  fastify.post('/api/kiosk/cancel', async (request, reply) => {
+    const {bill, pay} = request.body
+    try{
+
+      const order = await kassa.setCanceled(bill)
+      if(!order || order.ok === false){
+        throw new Error("CANCEL_ERROR")
+      }
+      const check = await atol.billAction({order, pay, bill}, "sell_refund")
+      return {ok: true, order, check}
+
+    }catch (e) {
+      return {ok: false, message: e.message}
+    }
+
+
+  })
+
   fastify.post('/api/kiosk/billCallBack', async (request, reply) => {
     const json = JSON.stringify(request.body)
     console.log(json)
