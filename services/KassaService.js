@@ -134,7 +134,7 @@ class Order {
             })
 
             await this.OrderItemsModel.bulkCreate(itemsDTO, {transaction})
-            await order.save()
+            await order.save({transaction})
 
             return order
 
