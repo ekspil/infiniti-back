@@ -19,6 +19,9 @@ const Kiosks = {
     key: {
         type: Sequelize.DataTypes.STRING
     },
+    stops: {
+        type: Sequelize.DataTypes.ARRAY(Sequelize.DataTypes.INTEGER)
+    },
     lock: {
         type: Sequelize.DataTypes.BOOLEAN
     },

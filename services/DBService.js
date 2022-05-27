@@ -47,7 +47,7 @@ class DB {
         }
         const users = await this.ProductModel.findAll({
             where,
-            order: [['id', 'DESC']]
+            order: [['name', 'DESC']]
         })
 
         return users.map(item => {
@@ -190,6 +190,7 @@ class DB {
             kiosk.gate = data.gate
             kiosk.lock = data.lock
             kiosk.key = data.key
+            kiosk.stops = data.stops
             return await kiosk.save()
         }
     }
