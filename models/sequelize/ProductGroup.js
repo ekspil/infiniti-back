@@ -15,6 +15,9 @@ const Product = {
     corner: {
         type: Sequelize.DataTypes.STRING,
     },
+    priority: {
+        type: Sequelize.DataTypes.INTEGER,
+    },
     img: {
         type: Sequelize.DataTypes.STRING,
     },

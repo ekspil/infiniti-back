@@ -31,7 +31,7 @@ class DB {
 
     async getAllGroups(){
         const users = await this.ProductGroupModel.findAll({
-            order: [['id', 'DESC']]
+            order: [['priority', 'DESC']]
         })
         return users
     }
@@ -147,6 +147,7 @@ class DB {
             }
             group.name = data.name
             group.img = data.img
+            group.priority = Number(data.priority)
             return await group.save()
         }
     }
