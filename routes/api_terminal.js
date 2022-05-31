@@ -209,8 +209,9 @@ module.exports = async function (fastify, opts) {
     return new ProductDTO(product)
   })
   fastify.get('/api/terminal/kiosks/get', async (request, reply) => {
-    const products = await db.getAllKiosks()
-    return products.map(key => new KioskDTO(key))
+
+    const kiosks = await db.getAllKiosks(null, request.query.report)
+    return kiosks.map(key => new KioskDTO(key))
   })
   fastify.get('/api/terminal/kiosks/get/:name', async (request, reply) => {
     const name = request.params.name

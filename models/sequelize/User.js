@@ -23,6 +23,9 @@ const User = {
         type: Sequelize.DataTypes.STRING,
         allowNull: false,
     },
+    kiosks: {
+        type: Sequelize.DataTypes.ARRAY(Sequelize.DataTypes.INTEGER)
+    },
     createdAt: {
         type: Sequelize.DataTypes.DATE,
         allowNull: true,

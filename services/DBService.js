@@ -1,5 +1,5 @@
 class DB {
-    constructor({UserModel, ProductModel, ItemModel, ProductGroupModel, SmenaModel, ProductModModel, CornerModel, KioskModel, HelperModel, io}) {
+    constructor({UserModel, ProductModel, ItemModel, ProductGroupModel, SmenaModel, ProductModModel, CornerModel, KioskModel, HelperModel, OrderModel, io}) {
         this.UserModel = UserModel
         this.ProductModel = ProductModel
         this.ProductGroupModel = ProductGroupModel
@@ -9,6 +9,7 @@ class DB {
         this.CornerModel = CornerModel
         this.KioskModel = KioskModel
         this.HelperModel = HelperModel
+        this.OrderModel = OrderModel
         this.io = io
 
         this.token = this.token.bind(this)
@@ -78,11 +79,66 @@ class DB {
         return corners
     }
 
-    async getAllKiosks(){
+    async getAllKiosks(user, report){
         const kiosks = await this.KioskModel.findAll({
             order: [['id', 'DESC']],
 
         })
+
+        if(report){
+
+
+            const { Op } = require("sequelize");
+            let where = {}
+
+            let timeZone = 10
+            let day = new Date().getUTCDate()
+            const month = new Date().getUTCMonth()
+            const year = new Date().getUTCFullYear()
+
+            if((new Date().getUTCHours() + timeZone) > 23) day++
+
+            const fromDay = new Date()
+            fromDay.setUTCFullYear(year)
+            fromDay.setUTCMonth(month)
+            fromDay.setUTCDate(day)
+            fromDay.setUTCHours(0 - timeZone)
+            fromDay.setUTCMinutes(0)
+            fromDay.setUTCSeconds(0)
+
+            const toDay = new Date()
+            toDay.setUTCFullYear(year)
+            toDay.setUTCMonth(month)
+            toDay.setUTCDate(day)
+            toDay.setUTCHours(23 - timeZone)
+            toDay.setUTCMinutes(59)
+            toDay.setUTCSeconds(59)
+
+
+
+            where.createdAt = {
+                [Op.lt]: toDay.getTime(),
+                [Op.gt]: fromDay.getTime()
+            }
+            where.status = "PAYED"
+
+
+
+            for (let kiosk of kiosks){
+                where.kioskId = kiosk.id
+                let orders = await this.OrderModel.findAll({
+                    where
+                })
+
+                const {count, sum} = orders.reduce((acc, item) => {
+                    acc.count++
+                    acc.sum += item.sum
+                    return acc
+                }, {count: 0, sum: 0})
+                kiosk.billSum = sum
+                kiosk.billCount = count
+            }
+        }
         return kiosks
     }
 
@@ -93,6 +149,7 @@ class DB {
             }
 
         })
+
         return kiosk
     }
 

@@ -202,6 +202,7 @@ module.exports = async function (fastify, opts) {
     TimerModel,
     CornerModel,
     HelperModel,
+    OrderModel,
     io: fastify.io
   })
 
