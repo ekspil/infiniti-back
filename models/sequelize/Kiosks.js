@@ -37,6 +37,9 @@ const Kiosks = {
     lock: {
         type: Sequelize.DataTypes.BOOLEAN
     },
+    vip: {
+        type: Sequelize.DataTypes.BOOLEAN
+    },
     createdAt: {
         type: Sequelize.DataTypes.DATE,
         allowNull: true,

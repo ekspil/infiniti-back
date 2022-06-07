@@ -23,6 +23,10 @@ const Product = {
     price: {
         type: Sequelize.DataTypes.FLOAT,
     },
+    priceVip: {
+        type: Sequelize.DataTypes.FLOAT,
+        field: "price_vip"
+    },
     items: {
         type: Sequelize.DataTypes.ARRAY(Sequelize.DataTypes.INTEGER)
     },

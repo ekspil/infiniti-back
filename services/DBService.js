@@ -193,6 +193,7 @@ class DB {
             product.items = data.items
             product.code = data.code
             product.price = data.price
+            product.priceVip = data.priceVip
             product.corner = data.corner
             product.mods = data.mods
             product.img = data.img
@@ -264,6 +265,7 @@ class DB {
             kiosk.gate = data.gate
             kiosk.lock = data.lock
             kiosk.key = data.key
+            kiosk.vip = data.vip
             kiosk.stops = data.stops
             kiosk.atolLogin = data.atolLogin
             kiosk.atolGroup = data.atolGroup
