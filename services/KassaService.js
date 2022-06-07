@@ -135,6 +135,7 @@ class Order {
 
             await this.OrderItemsModel.bulkCreate(itemsDTO, {transaction})
             await order.save({transaction})
+            order.kiosk = kiosk
 
             return order
 
@@ -153,7 +154,21 @@ class Order {
             })
             if (!order) return {ok: false, error: "Order not found"}
             order.status = "CANCELED"
-            return await order.save()
+
+            const kiosk = await this.Kiosk.findOne({
+                where: {
+                    name: data.kiosk
+                }
+            })
+
+            if(!kiosk){
+                throw new Error("KIOSK_NOT_FOUND")
+            }
+            await order.save()
+
+            order.kiosk = kiosk
+
+            return order
 
     }
 

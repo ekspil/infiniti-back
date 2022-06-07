@@ -27,7 +27,7 @@ module.exports = async function (fastify, opts) {
       if(!order){
         throw new Error("Ошибка записи заказа в БД")
       }
-      const check = await atol.billAction({order, pay, bill}, "sell")
+      const check = await atol.billAction({order, pay, bill}, "sell", order.kiosk)
       return {ok: true, order, check}
 
     }catch (e) {
@@ -46,7 +46,7 @@ module.exports = async function (fastify, opts) {
       if(!order || order.ok === false){
         throw new Error("CANCEL_ERROR")
       }
-      const check = await atol.billAction({order, pay, bill}, "sell_refund")
+      const check = await atol.billAction({order, pay, bill}, "sell_refund", order.kiosk)
       return {ok: true, order, check}
 
     }catch (e) {

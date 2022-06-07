@@ -25,11 +25,11 @@ class AtolService {
       );
   };
 
-  async getToken(){
+  async getToken(login, password){
 
       const data = {
-          login: process.env.ATOL_LOGIN,
-          pass: process.env.ATOL_PASSWORD,
+          login: login || process.env.ATOL_LOGIN,
+          pass: password || process.env.ATOL_PASSWORD,
       }
 
       const response = await fetch(`https://online.atol.ru/possystem/v4/getToken`, {
@@ -57,9 +57,9 @@ class AtolService {
   }
 
 
-  async billAction(data, action) {
+  async billAction(data, action, kiosk) {
       if(!this.token){
-          this.token = await this.getToken()
+          this.token = await this.getToken(kiosk.atolLogin, kiosk.atolPassword)
       }
       const {order, pay, bill} = data
       const check = {
@@ -112,7 +112,7 @@ class AtolService {
 
 
 
-      const result = await fetch(`https://online.atol.ru/possystem/v4/${process.env.ATOL_GROUP}/${action}`, {
+      const result = await fetch(`https://online.atol.ru/possystem/v4/${kiosk.atolGroup || process.env.ATOL_GROUP}/${action}`, {
           method: 'post',
           body: JSON.stringify(check),
           headers: {
