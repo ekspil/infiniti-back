@@ -265,7 +265,6 @@ class DB {
             kiosk.lock = data.lock
             kiosk.key = data.key
             kiosk.stops = data.stops
-            kiosk.kiosks = data.kiosks
             kiosk.atolLogin = data.atolLogin
             kiosk.atolGroup = data.atolGroup
             kiosk.atolPassword = data.atolPassword
@@ -326,6 +325,7 @@ class DB {
             user.password = data.password
             user.login = data.login
             user.role = data.role
+            user.kiosks = data.kiosks
             return await user.save()
         }
     }
