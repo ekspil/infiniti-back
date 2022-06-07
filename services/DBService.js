@@ -79,8 +79,26 @@ class DB {
         return corners
     }
 
-    async getAllKiosks(user, report){
+    async getAllKiosks(userId, report){
+
+        const { Op } = require("sequelize");
+        const whereKiosk = {}
+        if(userId){
+            const user = await this.UserModel.findOne({
+                where: {
+                    id: userId
+                }
+            })
+            if(!user) throw new Error("USER_NOT_FOUND")
+
+            if (user.role !== "ADMIN"){
+                whereKiosk.id = {
+                    [Op.in]: user.kiosks || []
+                }
+            }
+        }
         const kiosks = await this.KioskModel.findAll({
+            where: whereKiosk,
             order: [['id', 'DESC']],
 
         })
@@ -88,7 +106,6 @@ class DB {
         if(report){
 
 
-            const { Op } = require("sequelize");
             let where = {}
 
             let timeZone = 10
@@ -248,6 +265,9 @@ class DB {
             kiosk.lock = data.lock
             kiosk.key = data.key
             kiosk.stops = data.stops
+            kiosk.atolLogin = data.atolLogin
+            kiosk.atolGroup = data.atolGroup
+            kiosk.atolPassword = data.atolPassword
             return await kiosk.save()
         }
     }

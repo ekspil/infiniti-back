@@ -2,7 +2,7 @@
 
 class Corner {
 
-    constructor({id, name, uid, gate, lock, key, command, token, kioskId, stops, billSum, billCount}) {
+    constructor({id, name, uid, gate, lock, key, command, token, kioskId, stops, billSum, billCount, atolGroup, atolPassword, atolLogin}) {
         this.id = id
         this.name = name
         this.uid = uid
@@ -15,6 +15,9 @@ class Corner {
         this.kioskId = kioskId
         this.command = command || null
         this.token = token || null
+        this.atolGroup = atolGroup || null
+        this.atolPassword = atolPassword || null
+        this.atolLogin = atolLogin || null
     }
 }
 

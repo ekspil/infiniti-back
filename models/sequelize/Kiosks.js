@@ -19,6 +19,18 @@ const Kiosks = {
     key: {
         type: Sequelize.DataTypes.STRING
     },
+    atolLogin: {
+        type: Sequelize.DataTypes.STRING,
+        field: "atol_login"
+    },
+    atolPassword: {
+        type: Sequelize.DataTypes.STRING,
+        field: "atol_password"
+    },
+    atolGroup: {
+        type: Sequelize.DataTypes.STRING,
+        field: "atol_group"
+    },
     stops: {
         type: Sequelize.DataTypes.ARRAY(Sequelize.DataTypes.INTEGER)
     },

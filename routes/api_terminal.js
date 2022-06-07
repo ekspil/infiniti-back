@@ -210,7 +210,7 @@ module.exports = async function (fastify, opts) {
   })
   fastify.get('/api/terminal/kiosks/get', async (request, reply) => {
 
-    const kiosks = await db.getAllKiosks(null, request.query.report)
+    const kiosks = await db.getAllKiosks(request.query.userId, request.query.report)
     return kiosks.map(key => new KioskDTO(key))
   })
   fastify.get('/api/terminal/kiosks/get/:name', async (request, reply) => {
