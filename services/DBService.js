@@ -265,6 +265,7 @@ class DB {
             kiosk.lock = data.lock
             kiosk.key = data.key
             kiosk.stops = data.stops
+            kiosk.kiosks = data.kiosks
             kiosk.atolLogin = data.atolLogin
             kiosk.atolGroup = data.atolGroup
             kiosk.atolPassword = data.atolPassword
