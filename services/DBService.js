@@ -48,7 +48,7 @@ class DB {
         }
         const users = await this.ProductModel.findAll({
             where,
-            order: [['name', 'DESC']]
+            order: [['name', 'ASC']]
         })
 
         return users.map(item => {
@@ -59,7 +59,7 @@ class DB {
 
     async getAllMods(){
         const mods = await this.ProductModModel.findAll({
-            order: [['id', 'DESC']]
+            order: [['name', 'ASC']]
         })
         return mods
     }
