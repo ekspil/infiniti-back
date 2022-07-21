@@ -1,10 +1,10 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: kiosk-back
+  name: terminal-back
   namespace: production
   labels:
-    app: kiosk-back
+    app: terminal-back
 spec:
   replicas: 1
   strategy:
@@ -14,16 +14,16 @@ spec:
       maxSurge: 50%
   selector:
     matchLabels:
-      app: kiosk-back
+      app: terminal-back
   template:
     metadata:
       namespace: production
       labels:
-        app: kiosk-back
+        app: terminal-back
     spec:
       containers:
-        - name: kiosk-back
-          image: cr.yandex/crpbchff05ai3nceeln1/kiosk-back:1.0.23
+        - name: terminal-back
+          image: cr.yandex/crpbchff05ai3nceeln1/terminal-back:1.0.23
           ports:
             - containerPort: 3000
           readinessProbe:
@@ -36,6 +36,6 @@ spec:
             failureThreshold: 3
           envFrom:
             - configMapRef:
-                name: kiosk-back-config
+                name: terminal-back-config
       imagePullSecrets:
         - name: gitlabregistrycred
