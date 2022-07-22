@@ -76,7 +76,7 @@ module.exports = async function (fastify, opts) {
     as: "items"
   })
   //
-   await sequelize.sync({alter: true})
+  //await sequelize.sync({alter: true})
   // await sequelize.sync({force: true})
   // const us = [
   //   {name: "Ефремов Алексей", login: "admin@admin.ru", password: "admin", role: "ADMIN"},
