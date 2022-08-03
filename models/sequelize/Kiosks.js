@@ -31,6 +31,10 @@ const Kiosks = {
         type: Sequelize.DataTypes.STRING,
         field: "atol_group"
     },
+    atolInn: {
+        type: Sequelize.DataTypes.STRING,
+        field: "atol_inn"
+    },
     stops: {
         type: Sequelize.DataTypes.ARRAY(Sequelize.DataTypes.INTEGER)
     },

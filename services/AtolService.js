@@ -75,7 +75,7 @@ class AtolService {
               company: {
                   email: "it@infiniti-group.ru",
                   sno: "envd",
-                  inn: "2540129820",
+                  inn: kiosk.atolInn,
                   payment_address: "rb24.ru"
               },
               items: [

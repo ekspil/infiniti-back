@@ -270,6 +270,7 @@ class DB {
             kiosk.atolLogin = data.atolLogin
             kiosk.atolGroup = data.atolGroup
             kiosk.atolPassword = data.atolPassword
+            kiosk.atolInn = data.atolInn
             return await kiosk.save()
         }
     }
