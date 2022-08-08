@@ -6,7 +6,7 @@ class AtolService {
         this.getBillSum = this.getBillSum.bind(this)
         this.getTime = this.getTime.bind(this)
         this.billAction = this.billAction.bind(this)
-        this.token = null
+        this.token = {}
     }
   getTime(){
       const date = new Date()
@@ -58,8 +58,8 @@ class AtolService {
 
 
   async billAction(data, action, kiosk) {
-      if(!this.token){
-          this.token = await this.getToken(kiosk.atolLogin, kiosk.atolPassword)
+      if(!this.token[kiosk.atolInn]) {
+          this.token[kiosk.atolInn] = await this.getToken(kiosk.atolLogin, kiosk.atolPassword)
       }
       const {order, pay, bill} = data
       const check = {
@@ -117,7 +117,7 @@ class AtolService {
           body: JSON.stringify(check),
           headers: {
               'Content-Type': 'application/json; charset=utf-8',
-              "Token": this.token,
+              "Token": this.token[kiosk.atolInn],
           }
       })
 
