@@ -7,6 +7,10 @@ class AtolService {
         this.getTime = this.getTime.bind(this)
         this.billAction = this.billAction.bind(this)
         this.token = {}
+
+        setInterval(()=>{
+            this.token = {}
+        }, 12 * 3600 * 1000)
     }
   getTime(){
       const date = new Date()
