@@ -271,6 +271,9 @@ class DB {
             kiosk.atolGroup = data.atolGroup
             kiosk.atolPassword = data.atolPassword
             kiosk.atolInn = data.atolInn
+            kiosk.type = data.type
+            kiosk.iikoOrganizationId = data.iikoOrganizationId
+            kiosk.iikoTerminalGroupId = data.iikoTerminalGroupId
             return await kiosk.save()
         }
     }

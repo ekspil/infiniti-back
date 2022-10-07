@@ -19,6 +19,9 @@ const Kiosks = {
     key: {
         type: Sequelize.DataTypes.STRING
     },
+    type: {
+        type: Sequelize.DataTypes.STRING
+    },
     atolLogin: {
         type: Sequelize.DataTypes.STRING,
         field: "atol_login"
@@ -26,6 +29,14 @@ const Kiosks = {
     atolPassword: {
         type: Sequelize.DataTypes.STRING,
         field: "atol_password"
+    },
+    iikoTerminalGroupId: {
+        type: Sequelize.DataTypes.STRING,
+        field: "iiko_terminal_group_id"
+    },
+    iikoOrganizationId: {
+        type: Sequelize.DataTypes.STRING,
+        field: "iiko_organization_id"
     },
     atolGroup: {
         type: Sequelize.DataTypes.STRING,
