@@ -80,7 +80,7 @@ class AtolService {
                   email: "it@infiniti-group.ru",
                   sno: "envd",
                   inn: kiosk.atolInn,
-                  payment_address: "rb24.ru"
+                  payment_address: kiosk.uid
               },
               items: [
               ],

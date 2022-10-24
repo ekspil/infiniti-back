@@ -11,6 +11,8 @@ class Order {
         this.Kiosk = KioskModel
         this.io = io
         this.guid = this.guid.bind(this)
+        this.sendToIiko = this.sendToIiko.bind(this)
+        this.authIiko = this.authIiko.bind(this)
         this.ExecuteCommand = this.ExecuteCommand.bind(this)
     }
 
@@ -24,6 +26,83 @@ class Order {
                 'Content-Type': 'application/json',
                 "Authorization": "Basic " + Buffer.from(process.env.KKM_USER + ":" + process.env.KKM_PASSWORD).toString('base64')  },
         })
+    }
+
+    async sendToIiko(data, pay, kiosk){
+
+        if(!global.iikoToken){
+            await this.authIiko()
+        }
+        let server = "https://api-ru.iiko.services"
+
+        const Data = {
+            organizationId: "2bcd3990-4b45-4317-9849-dfebb63e947d",
+            terminalGroupId: "be8ed276-cc3d-427e-b4c4-65e878421985",
+            order: {
+                externalNumber: "24555",
+                phone: null,
+                guestCount: 1,
+                items: [
+                    {
+                        productId: "54a9dece-2330-4536-821c-834ef5c4f2e0",
+                        type: "Product",
+                        amount: 1,
+                        comment: "string"
+                    }
+                ],
+                combos: [],
+                payments: [
+                    {
+                        paymentTypeKind: "Card",
+                        sum: 1,
+                        paymentTypeId: "08db70af-3a27-4273-b3d7-333e10624db6",
+                        isProcessedExternally: true,
+                        isFiscalizedExternally: true
+                    }
+                ]
+            }
+        }
+
+        const order = await fetch(`http://${server}/api/1/order/create`, {
+            method: 'post',
+            body: JSON.stringify(Data) ,
+            headers: {
+                'Content-Type': 'application/json',
+                "Authorization": "Bearer " + global.iikoToken  },
+        })
+    }
+
+    async authIiko(){
+        let server = "https://api-ru.iiko.services"
+
+
+        const Data = {
+            apiLogin: process.env.IIKO_KEY
+        }
+        try{
+
+            const result = await fetch(`http://${server}/api/1/access_token`, {
+                method: 'post',
+                body: JSON.stringify(Data) ,
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            })
+            const json = result.json()
+            if(json.token){
+                global.iikoToken = json.token
+            }
+            else{
+                throw new Error("Iiko auth error, maybe key is invalid or not set in env")
+            }
+
+        }
+        catch (e) {
+            console.log(`IIKO_AUTH_ERROR ${e.message}`)
+            global.iikoToken = ""
+        }
+
+
     }
 
     async setStatus({orderId, status}, orderService){
@@ -135,7 +214,16 @@ class Order {
 
             await this.OrderItemsModel.bulkCreate(itemsDTO, {transaction})
             await order.save({transaction})
+
             order.kiosk = kiosk
+
+            if(kiosk.type === "IIKO"){
+
+                await this.sendToIiko(data, pay, kiosk)
+
+                order.iiko = true
+            }
+
 
             return order
 
