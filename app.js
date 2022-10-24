@@ -47,6 +47,8 @@ module.exports = async function (fastify, opts) {
   global.Users = new Map()
   global.Kiosks = new Map()
 
+  global.iikoToken = ""
+
 
 
   const UserModel = sequelize.define("users", User)
