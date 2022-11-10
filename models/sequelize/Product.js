@@ -14,6 +14,10 @@ const Product = {
     code: {
         type: Sequelize.DataTypes.STRING,
     },
+    codeIiko: {
+        type: Sequelize.DataTypes.STRING,
+        field: "code_iiko"
+    },
     corner: {
         type: Sequelize.DataTypes.STRING,
     },

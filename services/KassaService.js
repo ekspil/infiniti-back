@@ -14,6 +14,10 @@ class Order {
         this.sendToIiko = this.sendToIiko.bind(this)
         this.authIiko = this.authIiko.bind(this)
         this.ExecuteCommand = this.ExecuteCommand.bind(this)
+
+        this.interval = setInterval(()=>{
+            global.iikoToken = null
+        }, 1800000)
     }
 
     async ExecuteCommand(Data, otherServer){
@@ -28,25 +32,29 @@ class Order {
         })
     }
 
-    async sendToIiko(data, pay, kiosk){
-
+    async sendToIiko(data, pay, kiosk, order){
+        let token
         if(!global.iikoToken){
-            await this.authIiko()
+            token = await this.authIiko()
         }
+        else {
+            token = global.iikoToken
+        }
+
         let server = "https://api-ru.iiko.services"
 
         const Data = {
-            organizationId: "2bcd3990-4b45-4317-9849-dfebb63e947d",
-            terminalGroupId: "be8ed276-cc3d-427e-b4c4-65e878421985",
+            organizationId: kiosk.iikoOrganizationId,
+            terminalGroupId: kiosk.iikoTerminalGroupId,
             order: {
-                externalNumber: "24555",
+                externalNumber: "infiniti-" + order.id,
                 phone: null,
                 guestCount: 1,
                 items: [
                     {
                         productId: "54a9dece-2330-4536-821c-834ef5c4f2e0",
                         type: "Product",
-                        amount: 1,
+                        amount: 2,
                         comment: "string"
                     }
                 ],
@@ -63,13 +71,33 @@ class Order {
             }
         }
 
-        const order = await fetch(`http://${server}/api/1/order/create`, {
+        const orderSend = await fetch(`${server}/api/1/order/create`, {
             method: 'post',
             body: JSON.stringify(Data) ,
             headers: {
                 'Content-Type': 'application/json',
-                "Authorization": "Bearer " + global.iikoToken  },
+                "Authorization": "Bearer " + token  },
         })
+
+        const orderSendJson = await orderSend.json()
+
+
+        const close = {
+            chequeAdditionalInfo: null,
+            organizationId: kiosk.iikoOrganizationId,
+            orderId: orderSendJson.orderInfo.id
+        }
+
+        const orderClose = await fetch(`${server}/api/1/order/close`, {
+            method: 'post',
+            body: JSON.stringify(close) ,
+            headers: {
+                'Content-Type': 'application/json',
+                "Authorization": "Bearer " + token  },
+        })
+
+        const orderCloseJson = await orderClose.json()
+        return orderCloseJson
     }
 
     async authIiko(){
@@ -81,16 +109,17 @@ class Order {
         }
         try{
 
-            const result = await fetch(`http://${server}/api/1/access_token`, {
+            const result = await fetch(`${server}/api/1/access_token`, {
                 method: 'post',
                 body: JSON.stringify(Data) ,
                 headers: {
                     'Content-Type': 'application/json',
                 },
             })
-            const json = result.json()
+            const json = await result.json()
             if(json.token){
                 global.iikoToken = json.token
+                return json.token
             }
             else{
                 throw new Error("Iiko auth error, maybe key is invalid or not set in env")
@@ -219,9 +248,10 @@ class Order {
 
             if(kiosk.type === "IIKO"){
 
-                await this.sendToIiko(data, pay, kiosk)
+                await this.sendToIiko(data, pay, kiosk, order)
 
                 order.iiko = true
+                order.dataValues.iiko = true
             }
 
 
