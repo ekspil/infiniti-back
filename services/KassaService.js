@@ -14,10 +14,11 @@ class Order {
         this.sendToIiko = this.sendToIiko.bind(this)
         this.authIiko = this.authIiko.bind(this)
         this.ExecuteCommand = this.ExecuteCommand.bind(this)
+        this.waitASec = this.waitASec.bind(this)
 
         this.interval = setInterval(()=>{
             global.iikoToken = null
-        }, 1800000)
+        }, 800000)
     }
 
     async ExecuteCommand(Data, otherServer){
@@ -31,6 +32,15 @@ class Order {
                 "Authorization": "Basic " + Buffer.from(process.env.KKM_USER + ":" + process.env.KKM_PASSWORD).toString('base64')  },
         })
     }
+
+    async waitASec(time) {
+        return new Promise((resolve => {
+            setTimeout(() => {
+                resolve()
+            }, time || 1000)
+        }))
+    }
+
 
     async sendToIiko(data, pay, kiosk, order){
         let token
@@ -47,39 +57,93 @@ class Order {
             organizationId: kiosk.iikoOrganizationId,
             terminalGroupId: kiosk.iikoTerminalGroupId,
             order: {
-                externalNumber: "infiniti-" + order.id,
+                externalNumber: "KSK-" + String(order.id).slice(-4),
                 phone: null,
                 guestCount: 1,
                 items: [
-                    {
-                        productId: "54a9dece-2330-4536-821c-834ef5c4f2e0",
-                        type: "Product",
-                        amount: 2,
-                        comment: "string"
-                    }
                 ],
                 combos: [],
-                payments: [
-                    {
-                        paymentTypeKind: "Card",
-                        sum: 1,
-                        paymentTypeId: "08db70af-3a27-4273-b3d7-333e10624db6",
-                        isProcessedExternally: true,
-                        isFiscalizedExternally: true
-                    }
-                ]
+                payments: []
             }
         }
+        let sumOrder = 0
+        for (let i of data.items){
+
+            if(i.setProducts && i.setProducts.length > 0){
+                const itemsSum = i.setProducts.reduce((acc, p)=>{
+                    return acc + (p.price * p.count)
+                }, 0)
+
+                const k = i.price / itemsSum
+                for (let ii of i.setProducts){
+                    Data.order.items.push({
+                        productId: ii.codeIiko,
+                        type: "Product",
+                        price: Number((k * ii.price).toFixed(2)),
+                        amount: ii.count * i.count,
+                        comment: ii.name
+                    })
+                    sumOrder += (Number((k * ii.price).toFixed(2)) * (ii.count * i.count))
+                }
+
+            }
+            else{
+                Data.order.items.push({
+                    productId: i.codeIiko,
+                    type: "Product",
+                    price: i.price,
+                    amount: i.count,
+                    comment: i.name
+                })
+                sumOrder += (i.price * i.count)
+            }
+        }
+        Data.order.payments.push({
+            paymentTypeKind: "Card",
+            sum: Number(sumOrder.toFixed(0)),
+            paymentTypeId: "08db70af-3a27-4273-b3d7-333e10624db6",
+            isProcessedExternally: true,
+            isFiscalizedExternally: true
+        })
+
+        let orderTypeId
+        if(data.type = "OUT") {
+            orderTypeId = "4f126f74-3bc3-448e-852e-9439736e74e2"
+        }
+        else if(data.type = "IN") {
+            orderTypeId = "5e480c63-45d7-41f6-a7bf-67264f4e13e2"
+        }
+        else {
+            orderTypeId = "5e480c63-45d7-41f6-a7bf-67264f4e13e2"
+        }
+        Data.order.orderTypeId = orderTypeId
 
         const orderSend = await fetch(`${server}/api/1/order/create`, {
             method: 'post',
-            body: JSON.stringify(Data) ,
+            body: JSON.stringify(Data),
             headers: {
                 'Content-Type': 'application/json',
-                "Authorization": "Bearer " + token  },
+                "Authorization": "Bearer " + token },
         })
 
         const orderSendJson = await orderSend.json()
+        await this.waitASec(1000)
+
+        // const checkBody = {
+        //     organizationIds: [kiosk.iikoOrganizationId],
+        //     orderIds: [orderSendJson.orderInfo.id]
+        //
+        // }
+        // const orderCheck = await fetch(`${server}/api/1/order/by_id`, {
+        //     method: 'post',
+        //     body: JSON.stringify(checkBody) ,
+        //     headers: {
+        //         'Content-Type': 'application/json',
+        //         "Authorization": "Bearer " + token  },
+        // })
+        //
+        //
+        // const orderCheckJson = await orderCheck.json()
 
 
         const close = {
