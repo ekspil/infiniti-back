@@ -127,6 +127,8 @@ class Order {
         })
 
         const orderSendJson = await orderSend.json()
+
+        console.log(`IIKO1 ${JSON.stringify(orderCheckJson)}`)
         await this.waitASec(1000)
 
         const checkBody = {
@@ -144,7 +146,7 @@ class Order {
 
 
         const orderCheckJson = await orderCheck.json()
-        console.log(`IIKO ${JSON.stringify(orderCheckJson)}`)
+        console.log(`IIKO2 ${JSON.stringify(orderCheckJson)}`)
 
 
         const close = {
@@ -162,6 +164,8 @@ class Order {
         })
 
         const orderCloseJson = await orderClose.json()
+
+        console.log(`IIKO3 ${JSON.stringify(orderCloseJson)}`)
         return orderCloseJson
     }
 
