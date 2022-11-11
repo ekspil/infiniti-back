@@ -81,7 +81,7 @@ class Order {
                         type: "Product",
                         price: Number((k * ii.price).toFixed(2)),
                         amount: ii.count * i.count,
-                        comment: ii.name
+                        //comment: ii.name
                     })
                     sumOrder += (Number((k * ii.price).toFixed(2)) * (ii.count * i.count))
                 }
@@ -93,7 +93,7 @@ class Order {
                     type: "Product",
                     price: i.price,
                     amount: i.count,
-                    comment: i.name
+                    //comment: i.name
                 })
                 sumOrder += (i.price * i.count)
             }
