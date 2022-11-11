@@ -9,7 +9,7 @@ const Fastify = require('fastify')
 // Instantiate Fastify with some config
 console.log("Start initialisation ...")
 const app = Fastify({
-  logger: true,
+  logger: false,
   pluginTimeout: 120000
 })
 
