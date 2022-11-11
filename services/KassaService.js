@@ -128,7 +128,7 @@ class Order {
 
         const orderSendJson = await orderSend.json()
 
-        console.log(`IIKO1 ${JSON.stringify(orderCheckJson)}`)
+        console.log(`IIKO1 ${JSON.stringify(orderSendJson)}`)
         await this.waitASec(1000)
 
         const checkBody = {
