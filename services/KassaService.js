@@ -129,21 +129,22 @@ class Order {
         const orderSendJson = await orderSend.json()
         await this.waitASec(1000)
 
-        // const checkBody = {
-        //     organizationIds: [kiosk.iikoOrganizationId],
-        //     orderIds: [orderSendJson.orderInfo.id]
-        //
-        // }
-        // const orderCheck = await fetch(`${server}/api/1/order/by_id`, {
-        //     method: 'post',
-        //     body: JSON.stringify(checkBody) ,
-        //     headers: {
-        //         'Content-Type': 'application/json',
-        //         "Authorization": "Bearer " + token  },
-        // })
-        //
-        //
-        // const orderCheckJson = await orderCheck.json()
+        const checkBody = {
+            organizationIds: [kiosk.iikoOrganizationId],
+            orderIds: [orderSendJson.orderInfo.id]
+
+        }
+        const orderCheck = await fetch(`${server}/api/1/order/by_id`, {
+            method: 'post',
+            body: JSON.stringify(checkBody) ,
+            headers: {
+                'Content-Type': 'application/json',
+                "Authorization": "Bearer " + token  },
+        })
+
+
+        const orderCheckJson = await orderCheck.json()
+        console.log(`IIKO ${JSON.stringify(orderCheckJson)}`)
 
 
         const close = {
