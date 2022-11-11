@@ -53,10 +53,31 @@ class Order {
 
         let server = "https://api-ru.iiko.services"
 
+
+        const orderTablesBody = {
+            terminalGroupIds: [kiosk.iikoTerminalGroupId]
+
+        }
+        const orderTables = await fetch(`${server}/api/1/reserve/available_restaurant_sections`, {
+            method: 'post',
+            body: JSON.stringify(orderTablesBody) ,
+            headers: {
+                'Content-Type': 'application/json',
+                "Authorization": "Bearer " + token  },
+        })
+
+        const orderTablesJson = await orderTables.json()
+        const section = orderTablesJson.restaurantSections.find(item=>item.name = "Киоск")
+        const table = section.tables.find(item=>item.number = 99)
+
+
+
+
         const Data = {
             organizationId: kiosk.iikoOrganizationId,
             terminalGroupId: kiosk.iikoTerminalGroupId,
             order: {
+                tableIds: [table.id],
                 externalNumber: "KSK-" + String(order.id).slice(-4),
                 phone: null,
                 guestCount: 1,
@@ -129,25 +150,35 @@ class Order {
         const orderSendJson = await orderSend.json()
 
         console.log(`IIKO1 ${JSON.stringify(orderSendJson)}`)
-        await this.waitASec(1000)
+        //await this.waitASec(3000)
 
         const checkBody = {
             organizationIds: [kiosk.iikoOrganizationId],
             orderIds: [orderSendJson.orderInfo.id]
 
         }
-        const orderCheck = await fetch(`${server}/api/1/order/by_id`, {
-            method: 'post',
-            body: JSON.stringify(checkBody) ,
-            headers: {
-                'Content-Type': 'application/json',
-                "Authorization": "Bearer " + token  },
-        })
+
+        let int = 0
+        let orderCheckJson
+        do {
+            await this.waitASec(1000)
+            int++
+            const orderCheck = await fetch(`${server}/api/1/order/by_id`, {
+                method: 'post',
+                body: JSON.stringify(checkBody) ,
+                headers: {
+                    'Content-Type': 'application/json',
+                    "Authorization": "Bearer " + token  },
+            })
 
 
-        const orderCheckJson = await orderCheck.json()
-        console.log(`IIKO2 ${JSON.stringify(orderCheckJson)}`)
+            orderCheckJson = await orderCheck.json()
+            console.log(`IIKO2 ${JSON.stringify(orderCheckJson)}`)
 
+
+
+        }
+        while(int < 10 && orderCheckJson.orders[0].creationStatus !== "Success")
 
         const close = {
             chequeAdditionalInfo: null,
