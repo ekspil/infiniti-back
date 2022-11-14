@@ -124,7 +124,7 @@ class Order {
             sum: Number(sumOrder.toFixed(0)),
             paymentTypeId: "08db70af-3a27-4273-b3d7-333e10624db6",
             isProcessedExternally: true,
-            isFiscalizedExternally: true
+            //isFiscalizedExternally: true
         })
 
         let orderTypeId
@@ -197,7 +197,7 @@ class Order {
         const orderCloseJson = await orderClose.json()
 
         console.log(`IIKO3 ${JSON.stringify(orderCloseJson)}`)
-        return orderCloseJson
+        return orderCheckJson.orders[0]
     }
 
     async authIiko(){
@@ -348,10 +348,11 @@ class Order {
 
             if(kiosk.type === "IIKO"){
 
-                await this.sendToIiko(data, pay, kiosk, order)
+                const orderIiko = await this.sendToIiko(data, pay, kiosk, order)
 
                 order.iiko = true
                 order.dataValues.iiko = true
+                order.dataValues.iikoId = orderIiko.order.number
             }
 
 
