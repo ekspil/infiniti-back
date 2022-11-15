@@ -128,10 +128,10 @@ class Order {
         })
 
         let orderTypeId
-        if(data.type = "OUT") {
+        if(data.type === "OUT") {
             orderTypeId = "4f126f74-3bc3-448e-852e-9439736e74e2"
         }
-        else if(data.type = "IN") {
+        else if(data.type === "IN") {
             orderTypeId = "5e480c63-45d7-41f6-a7bf-67264f4e13e2"
         }
         else {
