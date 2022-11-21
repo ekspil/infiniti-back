@@ -18,7 +18,7 @@ class Order {
 
         this.interval = setInterval(()=>{
             global.iikoToken = null
-        }, 800000)
+        }, 300000)
     }
 
     async ExecuteCommand(Data, otherServer){
@@ -121,7 +121,7 @@ class Order {
         }
         Data.order.payments.push({
             paymentTypeKind: "Card",
-            sum: Number(sumOrder.toFixed(0)),
+            sum: Number(sumOrder.toFixed(2)),
             paymentTypeId: "08db70af-3a27-4273-b3d7-333e10624db6",
             isProcessedExternally: true,
             //isFiscalizedExternally: true
