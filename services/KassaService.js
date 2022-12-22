@@ -181,6 +181,10 @@ class Order {
         while(int < 10 && orderCheckJson.orders[0].creationStatus !== "Success")
 
         const close = {
+            chequeAdditionalInfo: {
+                needReceipt: false,
+                email: "aa@aa.ru"
+            },
             organizationId: kiosk.iikoOrganizationId,
             orderId: orderSendJson.orderInfo.id
         }
