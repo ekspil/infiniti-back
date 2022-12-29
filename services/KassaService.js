@@ -180,7 +180,7 @@ class Order {
         }
         while(orderCheckJson.orders[0].creationStatus === "InProgress" )
 
-        if(orderCheckJson.orders[0].creationStatus !== "Error"){
+        if(orderCheckJson.orders[0].creationStatus === "Error"){
             return {
                 error: "IIKO_ERROR",
                 text: orderCheckJson.orders[0].errorInfo
