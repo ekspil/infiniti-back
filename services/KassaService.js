@@ -178,8 +178,15 @@ class Order {
 
 
         }
-        while(int < 10 && orderCheckJson.orders[0].creationStatus !== "Success")
+        while(orderCheckJson.orders[0].creationStatus === "InProgress" )
 
+        if(orderCheckJson.orders[0].creationStatus !== "Error"){
+            return {
+                error: "IIKO_ERROR",
+                text: orderCheckJson.orders[0].errorInfo
+            }
+
+        }
         const close = {
             chequeAdditionalInfo: {
                 needReceipt: false,
@@ -353,9 +360,18 @@ class Order {
 
                 const orderIiko = await this.sendToIiko(data, pay, kiosk, order)
 
+
+                if(orderIiko && orderIiko.error === "IIKO_ERROR"){
+                    await order.destroy({transaction})
+                    return orderIiko
+                }
+
                 order.iiko = true
                 order.dataValues.iiko = true
                 order.dataValues.iikoId = orderIiko.order.number
+
+
+
             }
 
 

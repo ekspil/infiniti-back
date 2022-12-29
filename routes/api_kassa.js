@@ -27,11 +27,16 @@ module.exports = async function (fastify, opts) {
       if(!order){
         throw new Error("Ошибка записи заказа в БД")
       }
+      if(order.error === "IIKO_ERROR"){
+        console.log("IIKO_ERROR: " + JSON.stringify(order.text))
+        throw new Error(JSON.stringify(order.text))
+      }
+
       const check = await atol.billAction({order, pay, bill}, "sell", order.kiosk)
       return {ok: true, order, check}
 
     }catch (e) {
-      return {ok: false, message: e.message}
+      return {ok: false, message: e.message, moneyBack: true}
     }
 
 
