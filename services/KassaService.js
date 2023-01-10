@@ -67,8 +67,8 @@ class Order {
         })
 
         const orderTablesJson = await orderTables.json()
-        const section = orderTablesJson.restaurantSections.find(item=>item.name = "КИОСК")
-        const table = section.tables.find(item=>item.number = 99)
+        const section = orderTablesJson.restaurantSections.find(item=>item.name === "КИОСК")
+        const table = section.tables.find(item=>item.number === 99)
 
 
 
