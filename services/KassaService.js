@@ -71,7 +71,10 @@ class Order {
         const table = section.tables.find(item=>item.number === 99)
 
         if(!table){
-            throw new Error("Table for KIOSK not fount")
+            return {
+                error: "IIKO_ERROR",
+                text: 'Не найден стол для секции КИОСК, сперва создайте стол в справочнике'
+            }
         }
 
 
