@@ -70,6 +70,10 @@ class Order {
         const section = orderTablesJson.restaurantSections.find(item=>item.name === "КИОСК")
         const table = section.tables.find(item=>item.number === 99)
 
+        if(!table){
+            throw new Error("Table for KIOSK not fount")
+        }
+
 
 
 
