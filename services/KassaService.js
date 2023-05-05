@@ -42,7 +42,7 @@ class Order {
     }
 
 
-    async sendToIiko(data, pay, kiosk, order){
+    async sendToIiko(data, kiosk, order){
         let token
         if(!global.iikoToken){
             token = await this.authIiko()
@@ -194,27 +194,88 @@ class Order {
             }
 
         }
-        const close = {
-            chequeAdditionalInfo: {
-                needReceipt: false,
-                email: "aa@aa.ru"
-            },
-            organizationId: kiosk.iikoOrganizationId,
-            orderId: orderSendJson.orderInfo.id
+
+
+        return {
+                error: null,
+                text: "SUCCESS",
+                data: orderSendJson.orderInfo
+            }
+
+
+    }
+
+    async closeIikoOrder(bill, orderIikoId, orderId, pay){
+
+        try {
+            let server = "https://api-ru.iiko.services"
+            const kiosk = await this.Kiosk.findOne({
+                where: {
+                    name: bill.kiosk
+                }
+            })
+            if(!kiosk){
+                throw new Error("KIOSK_NOT_FOUND")
+            }
+
+            let token
+            if(!global.iikoToken){
+                token = await this.authIiko()
+            }
+            else {
+                token = global.iikoToken
+            }
+
+
+            const close = {
+                chequeAdditionalInfo: {
+                    needReceipt: false,
+                    email: "aa@aa.ru"
+                },
+                organizationId: kiosk.iikoOrganizationId,
+                orderId: orderIikoId
+            }
+
+            const orderClose = await fetch(`${server}/api/1/order/close`, {
+                method: 'post',
+                body: JSON.stringify(close) ,
+                headers: {
+                    'Content-Type': 'application/json',
+                    "Authorization": "Bearer " + token  },
+            })
+
+            const orderCloseJson = await orderClose.json()
+
+
+            const order = await this.OrderModel.findOne({
+                where: {
+                    id: orderId
+                }
+            })
+            order.status = "PAYED"
+            order.RRNCode = pay.RRNCode
+            order.AuthorizationCode = pay.AuthorizationCode
+
+            await order.save()
+
+
+
+            console.log(`IIKO3 ${JSON.stringify(orderCloseJson)}`)
+            return {
+                error: null,
+                text: "SUCCESS",
+                order,
+                kiosk
+            }
+        }catch (e) {
+            return {
+                error: "IIKO_ERROR",
+                text: e.message
+            }
         }
 
-        const orderClose = await fetch(`${server}/api/1/order/close`, {
-            method: 'post',
-            body: JSON.stringify(close) ,
-            headers: {
-                'Content-Type': 'application/json',
-                "Authorization": "Bearer " + token  },
-        })
 
-        const orderCloseJson = await orderClose.json()
 
-        console.log(`IIKO3 ${JSON.stringify(orderCloseJson)}`)
-        return orderCheckJson.orders[0]
     }
 
     async authIiko(){
@@ -340,9 +401,9 @@ class Order {
 
             const orderDTO = {
                 type: data.type,
-                status: "PAYED",
-                RRNCode: pay.RRNCode,
-                AuthorizationCode: pay.AuthorizationCode,
+                status: "CREATED",
+                RRNCode: null,
+                AuthorizationCode: null,
                 payType: "CASHLESS",
                 kioskId: kiosk.id,
                 sum
@@ -365,7 +426,7 @@ class Order {
 
             if(kiosk.type === "IIKO"){
 
-                const orderIiko = await this.sendToIiko(data, pay, kiosk, order)
+                const orderIiko = await this.sendToIiko(data,  kiosk, order)
 
 
                 if(orderIiko && orderIiko.error === "IIKO_ERROR"){
@@ -375,7 +436,7 @@ class Order {
 
                 order.iiko = true
                 order.dataValues.iiko = true
-                order.dataValues.iikoId = orderIiko.order.number
+                order.dataValues.iikoId = orderIiko.data.id
 
 
 

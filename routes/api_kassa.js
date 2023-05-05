@@ -20,10 +20,31 @@ module.exports = async function (fastify, opts) {
 
 
   fastify.post('/api/kiosk/create', async (request, reply) => {
-    const {bill, pay} = request.body
+    const {bill} = request.body
     try{
 
-      const order = await kassa.createOrder(bill, pay)
+      const order = await kassa.createOrder(bill)
+      if(!order){
+        throw new Error("Ошибка записи заказа в БД")
+      }
+      if(order.error === "IIKO_ERROR"){
+        console.log("IIKO_ERROR: " + JSON.stringify(order.text))
+        throw new Error(JSON.stringify(order.text))
+      }
+
+      return {ok: true, order}
+
+    }catch (e) {
+      return {ok: false, message: e.message, moneyBack: true}
+    }
+
+
+  })
+  fastify.post('/api/kiosk/close', async (request, reply) => {
+    const {pay, bill, orderIikoId, orderId} = request.body
+    try{
+
+      const order = await kassa.closeIikoOrder(bill, orderIikoId, orderId, pay)
       if(!order){
         throw new Error("Ошибка записи заказа в БД")
       }
