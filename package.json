@@ -1,6 +1,6 @@
 {
-  "name": "kiosk-back",
-  "version": "1.0.49",
+  "name": "terminal-back",
+  "version": "1.0.51",
   "description": "",
   "main": "app.js",
   "directories": {
