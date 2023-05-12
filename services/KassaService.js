@@ -67,7 +67,18 @@ class Order {
         })
 
         const orderTablesJson = await orderTables.json()
-        const section = orderTablesJson.restaurantSections.find(item=>item.name === "КИОСК")
+
+
+        const section = orderTablesJson.restaurantSections.find(item=>item.name.toUpperCase() === "КИОСК")
+
+
+        if(!section){
+            return {
+                error: "IIKO_ERROR",
+                text: 'Не найдена секция с названием КИОСК'
+            }
+        }
+
         const table = section.tables.find(item=>item.number === 99)
 
         if(!table){
