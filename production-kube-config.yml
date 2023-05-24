@@ -23,7 +23,7 @@ spec:
     spec:
       containers:
         - name: terminal-back
-          image: cr.yandex/crpbchff05ai3nceeln1/terminal-back:1.0.53
+          image: cr.yandex/crpbchff05ai3nceeln1/terminal-back:1.0.55
           ports:
             - containerPort: 3000
           readinessProbe:
