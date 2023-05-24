@@ -210,13 +210,13 @@ class Order {
         return {
                 error: null,
                 text: "SUCCESS",
-                data: orderSendJson.orderInfo
+                data: orderCheckJson.orders[0]
             }
 
 
     }
 
-    async closeIikoOrder(bill, orderIikoId, orderId, pay){
+    async closeIikoOrder(bill, orderIikoId, orderId, pay, userId){
 
         try {
             let server = "https://api-ru.iiko.services"
@@ -268,6 +268,8 @@ class Order {
             order.AuthorizationCode = pay.AuthorizationCode
 
             await order.save()
+            order.dataValues.iiko = true
+            order.dataValues.iikoId = userId
 
 
 
@@ -448,6 +450,7 @@ class Order {
                 order.iiko = true
                 order.dataValues.iiko = true
                 order.dataValues.iikoId = orderIiko.data.id
+                order.dataValues.userId = orderIiko.data.order.number
 
 
 

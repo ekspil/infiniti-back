@@ -41,10 +41,10 @@ module.exports = async function (fastify, opts) {
 
   })
   fastify.post('/api/kiosk/close', async (request, reply) => {
-    const {pay, bill, orderIikoId, orderId} = request.body
+    const {pay, bill, orderIikoId, orderId, userId} = request.body
     try{
 
-      const order = await kassa.closeIikoOrder(bill, orderIikoId, orderId, pay)
+      const order = await kassa.closeIikoOrder(bill, orderIikoId, orderId, pay, userId)
       if(!order){
         throw new Error("Ошибка записи заказа в БД")
       }
