@@ -68,9 +68,9 @@ class AtolService {
       const {order, pay, bill} = data
       const check = {
           timestamp: this.getTime(),
-          external_id: `terminal_kiosk_${order.order.id}`,
+          external_id: `rb_kiosk_${order.order.id}`,
           service: {
-              callback_url: "https://terminal-api.rb24.ru/api/kiosk/billCallBack"
+              callback_url: "https://api.rb24.ru/api/kiosk/billCallBack"
           },
           receipt: {
               client: {
