@@ -275,6 +275,7 @@ class DB {
             kiosk.type = data.type
             kiosk.iikoOrganizationId = data.iikoOrganizationId
             kiosk.iikoTerminalGroupId = data.iikoTerminalGroupId
+            kiosk.kioskImg = data.kioskImg
             return await kiosk.save()
         }
     }
