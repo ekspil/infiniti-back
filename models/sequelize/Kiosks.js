@@ -26,6 +26,10 @@ const Kiosks = {
         type: Sequelize.DataTypes.STRING,
         field: "atol_login"
     },
+    kioskImg: {
+        type: Sequelize.DataTypes.STRING,
+        field: "kiosk_img"
+    },
     atolPassword: {
         type: Sequelize.DataTypes.STRING,
         field: "atol_password"
