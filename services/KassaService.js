@@ -75,7 +75,7 @@ class Order {
         if(!section){
             return {
                 error: "IIKO_ERROR",
-                text: 'Не найдена секция с названием КИОСК'
+                text: 'IIKO_ERROR: Не найдена секция с названием КИОСК'
             }
         }
 
@@ -84,7 +84,7 @@ class Order {
         if(!table){
             return {
                 error: "IIKO_ERROR",
-                text: 'Не найден стол для секции КИОСК, сперва создайте стол в справочнике'
+                text: 'IIKO_ERROR: Не найден стол для секции КИОСК, сперва создайте стол в справочнике'
             }
         }
 
@@ -166,7 +166,12 @@ class Order {
         })
 
         const orderSendJson = await orderSend.json()
-
+        if(orderSendJson.error){
+            return {
+                error: "IIKO_ERROR",
+                text: `IIKO_ERROR: ${orderSendJson.error}: ${orderSendJson.errorDescription}`
+            }
+        }
         console.log(`IIKO1 ${JSON.stringify(orderSendJson)}`)
         //await this.waitASec(3000)
 
@@ -199,9 +204,16 @@ class Order {
         while(orderCheckJson.orders[0].creationStatus === "InProgress" )
 
         if(orderCheckJson.orders[0].creationStatus === "Error"){
+            let text
+            if(typeof orderCheckJson.orders[0].errorInfo === "object"){
+                text = JSON.stringify(orderCheckJson.orders[0].errorInfo)
+            }
+            else{
+                text = orderCheckJson.orders[0].errorInfo
+            }
             return {
                 error: "IIKO_ERROR",
-                text: orderCheckJson.orders[0].errorInfo
+                text: "IIKO_ERROR: " + text
             }
 
         }
@@ -283,7 +295,7 @@ class Order {
         }catch (e) {
             return {
                 error: "IIKO_ERROR",
-                text: e.message
+                text: "IIKO_ERROR: "+e.message
             }
         }
 
