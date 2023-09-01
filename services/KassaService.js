@@ -12,6 +12,7 @@ class Order {
         this.io = io
         this.guid = this.guid.bind(this)
         this.sendToIiko = this.sendToIiko.bind(this)
+        this.closeIikoOrder = this.closeIikoOrder.bind(this)
         this.authIiko = this.authIiko.bind(this)
         this.ExecuteCommand = this.ExecuteCommand.bind(this)
         this.waitASec = this.waitASec.bind(this)
@@ -410,7 +411,7 @@ class Order {
 
     }
 
-    async createOrder(data, pay){
+    async createOrder(data, pay, payType, orderCreated){
         return this.OrderModel.sequelize.transaction(async (transaction) => {
             const kiosk = await this.Kiosk.findOne({
                 where: {
@@ -423,19 +424,29 @@ class Order {
             let sum = data.items.reduce((sum, current) => {
                 return sum + current.count * current.price
             }, 0);
+            let order
+            if(!orderCreated){
+                const orderDTO = {
+                    type: data.type,
+                    status: "CREATED",
+                    RRNCode: null,
+                    AuthorizationCode: null,
+                    payType: payType || "CASHLESS",
+                    kioskId: kiosk.id,
+                    sum
 
-            const orderDTO = {
-                type: data.type,
-                status: "CREATED",
-                RRNCode: null,
-                AuthorizationCode: null,
-                payType: "CASHLESS",
-                kioskId: kiosk.id,
-                sum
+                }
+
+                order = await this.OrderModel.create(orderDTO, {transaction})
+            }
+            else {
+                    order = orderCreated
+                    order.type = data.type,
+                    order.kioskId = kiosk.id,
+                    order.sum = sum
 
             }
 
-            const order = await this.OrderModel.create(orderDTO, {transaction})
             order.route = Number(String(order.id).slice(-4))
             const itemsDTO = data.items.map(item => {
                 item.order_id = order.id
@@ -467,7 +478,6 @@ class Order {
 
 
             }
-
 
             return order
 
@@ -1305,6 +1315,99 @@ class Order {
 
         // Вызов команды
         return await this.ExecuteCommand(Data, kkmServer);
+    }
+// Оплата безналом
+    async paySBP(data) {
+
+
+        const body = {
+            "extEntityId": process.env.SBP_EXT_ENTITI_ID,
+            "merchantId": process.env.SBP_MERCHANT_ID,
+            "account": process.env.SBP_ACCOUNT,
+            //"accAlias": "e5a4f3fe-a6c0-41b0-b814-ba085f4ede7a",
+            "amount": 1, //order.sum * 100,
+            "paymentPurpose": "Оплата по заказу с киоска",
+            "qrcType": "02",
+            "expDt": 5,
+            "localExpDt": 300
+        }
+        const result = await fetch(process.env.SBP_HOST + "/qr", {
+            method: 'post',
+            body: JSON.stringify(body) ,
+            headers: {
+                'Content-Type': 'application/json',
+                "Authorization": "Bearer " + process.env.SBP_BEARER  },
+        })
+
+        const json = await result.json()
+        json.imageBMP = process.env.SERVICE_ADDRESS + "/api/qr/image/" + json.qrcId
+
+
+
+        return json
+
+
+
+    }
+
+// Возврат СБП
+    async cancelSBP({orderId, qrcId}) {
+
+
+        const body = {
+            "refId": "RB-KIOSK-" + orderId,
+            "longWait": true,
+            "refData": qrcId,
+            "refType": "qrcId"
+        }
+        const result = await fetch(process.env.SBP_HOST + "/refund", {
+            method: 'post',
+            body: JSON.stringify(body) ,
+            headers: {
+                'Content-Type': 'application/json',
+                "Authorization": "Bearer " + process.env.SBP_BEARER  },
+        })
+
+        const json = await result.json()
+        return json
+
+
+
+    }
+
+
+    async getSbpImg(qrId, request, reply){
+        const res = await fetch(process.env.SBP_HOST + "/qr/image/" + qrId, {
+            method: 'get',
+            headers: {
+                "Authorization": "Bearer " + process.env.SBP_BEARER  },
+        })
+
+        reply.send(res.body)
+    }
+
+    async paySBPApply(data){
+        await this.OrderModel.create({status: "PAYED", qrcId: data.qrcId, type: "SBP"})
+        return {success: true}
+    }
+
+    async checkSBPApply(data){
+        const where = {
+            qrcId: data.qrcId
+        }
+        const result = await this.OrderModel.findOne({where})
+        if(!result) return {payed: false}
+
+        if(result.status !== "PAYED") return {payed: false}
+
+
+        const order = await this.createOrder(data, null, "SBP", result)
+        const closedOrder = await this.closeIikoOrder({kiosk: order.kiosk.name}, order.dataValues.iikoId, result.id, {RRNCode: null, AuthorizationCode: null}, order.dataValues.userId)
+        if(order.error) { //order.error
+            await this.cancelSBP({orderId: result.id, qrcId: data.qrcId})
+            return {ok: false, message: order.error, error: true}
+        } //todo money back
+        return {ok: true, payed: true, order: closedOrder}
     }
 
     async returnChekPayment(data) {

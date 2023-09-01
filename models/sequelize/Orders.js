@@ -24,6 +24,10 @@ const Order = {
     status: {
         type: Sequelize.DataTypes.STRING,
     },
+    qrcId: {
+        type: Sequelize.DataTypes.STRING,
+        field: "qrc_id"
+    },
     payType: {
         type: Sequelize.DataTypes.STRING,
         field: "pay_type"

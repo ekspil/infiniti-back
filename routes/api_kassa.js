@@ -134,6 +134,32 @@ module.exports = async function (fastify, opts) {
     return {ok: true, result}
   })
 
+  fastify.post('/api/kassa/paySBP/', async (request, reply) => {
+
+    return await kassa.paySBP(request.body)
+  })
+
+
+  fastify.post('/api/kassa/checkSBP/', async (request, reply) => {
+
+    return await kassa.checkSBPApply(request.body)
+  })
+
+
+  fastify.post('/api/c2b_payment', async (request, reply) => {
+
+    console.log(request.body)
+
+    return await kassa.paySBPApply(request.body)
+  })
+
+  fastify.get('/api/qr/image/:qrId', async (request, reply) => {
+
+    await kassa.getSbpImg(request.params.qrId, request, reply)
+
+  })
+
+
   fastify.post('/api/kassa/payTerminal/', async (request, reply) => {
 
     const res = await kassa.payTerminal(request.body)
