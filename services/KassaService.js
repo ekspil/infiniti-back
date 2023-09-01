@@ -1320,13 +1320,16 @@ class Order {
 // Оплата безналом
     async paySBP(data) {
 
+        const sum = data.items.reduce((sum, current) => {
+            return sum + current.count * current.price
+        }, 0);
 
         const body = {
             "extEntityId": process.env.SBP_EXT_ENTITI_ID,
             "merchantId": process.env.SBP_MERCHANT_ID,
             "account": process.env.SBP_ACCOUNT,
             //"accAlias": "e5a4f3fe-a6c0-41b0-b814-ba085f4ede7a",
-            "amount": 1, //order.sum * 100,
+            "amount": sum * 100,
             "paymentPurpose": "Оплата по заказу с киоска",
             "qrcType": "02",
             "expDt": 5,
