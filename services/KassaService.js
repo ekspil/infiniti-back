@@ -406,7 +406,8 @@ class Order {
             payType: order.payType,
             AuthorizationCode: order.AuthorizationCode,
             RRNCode: order.RRNCode,
-            kioskId: order.kioskId
+            kioskId: order.kioskId,
+            qrcId: order.qrcId
         }
 
     }
@@ -1387,7 +1388,7 @@ class Order {
     }
 
     async paySBPApply(data){
-        await this.OrderModel.create({status: "PAYED", qrcId: data.qrcId, type: "SBP"})
+        await this.OrderModel.create({status: "PAYED", qrcId: data.qrcId, payType: "SBP"})
         return {success: true}
     }
 

@@ -82,6 +82,26 @@ module.exports = async function (fastify, opts) {
 
   })
 
+  fastify.post('/api/kiosk/cancelSBP', async (request, reply) => {
+    try{
+      const refund = await kassa.cancelSBP({orderId: request.body.id, qrcId: request.body.qrcId})
+      if(refund.status !== 0 ) return {ok: false, message: "Отказ от системы СБП"}
+
+      const order = await kassa.setCanceled(request.body)
+
+      if(!order || order.ok === false){
+        throw new Error("CANCEL_ERROR")
+      }
+      const check = await atol.billAction({order, pay, bill}, "sell_refund", order.kiosk)
+      return {ok: true, order, check}
+
+    }catch (e) {
+      return {ok: false, message: e.message}
+    }
+
+
+  })
+
   fastify.post('/api/kiosk/billCallBack', async (request, reply) => {
     const json = JSON.stringify(request.body)
     console.log(json)
