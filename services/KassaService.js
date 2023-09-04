@@ -1392,6 +1392,7 @@ class Order {
 
     async paySBPApply(data){
         await this.OrderModel.create({status: "PAYED", qrcId: data.qrcId, payType: "SBP"})
+        await this.io.emit("SBPPaymentSuccess", {qrcId: data.qrcId})
         return {success: true}
     }
 
@@ -1403,6 +1404,8 @@ class Order {
         if(!result) return {payed: false}
 
         if(result.status !== "PAYED") return {payed: false}
+
+        await this.io.emit("SBPPaymentSuccess", {qrcId: data.qrcId})
 
 
         const order = await this.createOrder(data, null, "SBP", result)

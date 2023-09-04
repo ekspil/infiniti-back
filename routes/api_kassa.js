@@ -92,7 +92,7 @@ module.exports = async function (fastify, opts) {
       if(!order || order.ok === false){
         throw new Error("CANCEL_ERROR")
       }
-      const check = await atol.billAction({order, pay, bill}, "sell_refund", order.kiosk)
+      const check = await atol.billAction({order: {order}, pay: {}, bill: request.body}, "sell_refund", order.kiosk)
       return {ok: true, order, check}
 
     }catch (e) {
