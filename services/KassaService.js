@@ -1402,19 +1402,30 @@ class Order {
         }
         const result = await this.OrderModel.findOne({where})
         if(!result) return {payed: false}
-
         if(result.status !== "PAYED") return {payed: false}
 
-        await this.io.emit("SBPPaymentSuccess", {qrcId: data.qrcId})
+        try {
+
+            await this.io.emit("SBPPaymentSuccess", {qrcId: data.qrcId})
 
 
-        const order = await this.createOrder(data, null, "SBP", result)
-        const closedOrder = await this.closeIikoOrder({kiosk: order.kiosk.name}, order.dataValues.iikoId, result.id, {RRNCode: null, AuthorizationCode: null}, order.dataValues.userId)
-        if(order.error) { //order.error
+            const order = await this.createOrder(data, null, "SBP", result)
+            if(order.error) { //order.error
+                await this.cancelSBP({orderId: result.id, qrcId: data.qrcId})
+                return {ok: false, message: order.error, error: true}
+            }
+
+            const closedOrder = await this.closeIikoOrder({kiosk: order.kiosk.name}, order.dataValues.iikoId, result.id, {RRNCode: null, AuthorizationCode: null}, order.dataValues.userId)
+            if(closedOrder.error) { //order.error
+                await this.cancelSBP({orderId: result.id, qrcId: data.qrcId})
+                return {ok: false, message: order.error, error: true}
+            } //todo money back
+            return {ok: true, payed: true, order: closedOrder}
+        }catch (e) {
             await this.cancelSBP({orderId: result.id, qrcId: data.qrcId})
             return {ok: false, message: order.error, error: true}
-        } //todo money back
-        return {ok: true, payed: true, order: closedOrder}
+        }
+
     }
 
     async returnChekPayment(data) {
