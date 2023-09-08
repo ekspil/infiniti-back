@@ -162,7 +162,7 @@ module.exports = async function (fastify, opts) {
 
   fastify.post('/api/kassa/checkSBP/', async (request, reply) => {
 
-    return await kassa.checkSBPApply(request.body)
+    return await kassa.checkSBPApply(request.body, atol)
   })
 
 

@@ -1396,7 +1396,7 @@ class Order {
         return {success: true}
     }
 
-    async checkSBPApply(data){
+    async checkSBPApply(data, atol){
         const where = {
             qrcId: data.qrcId
         }
@@ -1420,7 +1420,9 @@ class Order {
                 await this.cancelSBP({orderId: result.id, qrcId: data.qrcId})
                 return {ok: false, message: order.error, error: true}
             } //todo money back
-            return {ok: true, payed: true, order: closedOrder}
+            const check = await atol.billAction({order: {order}, pay: {}, bill: data}, "sell", order.kiosk)
+
+            return {ok: true, payed: true, order: closedOrder, check}
         }catch (e) {
             await this.cancelSBP({orderId: result.id, qrcId: data.qrcId})
             return {ok: false, message: order.error, error: true}
