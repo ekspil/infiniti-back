@@ -1357,7 +1357,6 @@ class Order {
 // Возврат СБП
     async cancelSBP({orderId, qrcId}) {
 
-
         const body = {
             "refId": "RB-KIOSK-" + orderId,
             "longWait": true,
@@ -1372,8 +1371,34 @@ class Order {
                 "Authorization": "Bearer " + process.env.SBP_BEARER  },
         })
 
+        const order = await this.OrderModel.findOne({
+            where: {
+                id: orderId
+            },
+            order: [
+                ["id", "DESC"]
+            ]
+        })
+
+
+        order.status = "CANCELED"
+        await order.save()
+
+        if(order.kioskId){
+
+
+            const kiosk = await this.Kiosk.findOne({
+                where: {
+                    id: order.kioskId
+                }
+            })
+            order.kiosk = kiosk.dataValues
+
+        }
+
         const json = await result.json()
-        return json
+        order.sbp_unswer = json
+        return order
 
 
 
@@ -1391,7 +1416,8 @@ class Order {
     }
 
     async paySBPApply(data){
-        await this.OrderModel.create({status: "PAYED", qrcId: data.qrcId, payType: "SBP"})
+        const sum = Number(data.amount) / 100
+        await this.OrderModel.create({sum, status: "PAYED", qrcId: data.qrcId, payType: "SBP"})
         await this.io.emit("SBPPaymentSuccess", {qrcId: data.qrcId})
         return {success: true}
     }
