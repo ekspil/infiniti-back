@@ -1363,6 +1363,8 @@ class Order {
             "refData": qrcId,
             "refType": "qrcId"
         }
+
+        await this.waitASec(30000)
         const result = await fetch(process.env.SBP_HOST + "/refund", {
             method: 'post',
             body: JSON.stringify(body) ,
@@ -1423,6 +1425,7 @@ class Order {
     }
 
     async checkSBPApply(data, atol){
+        if(!data.qrcId) return {ok: false, message: "СБП не подгрузилось", error: true}
         const where = {
             qrcId: data.qrcId
         }
