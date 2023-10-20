@@ -169,7 +169,7 @@ module.exports = async function (fastify, opts) {
 
   fastify.post('/api/c2b_payment', async (request, reply) => {
 
-    console.log(request.body)
+    console.log("SBP_PAYMENT:" + JSON.stringify(request.body))
 
     return await kassa.paySBPApply(request.body)
   })

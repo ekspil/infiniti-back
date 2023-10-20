@@ -197,7 +197,6 @@ class Order {
 
 
             orderCheckJson = await orderCheck.json()
-            console.log(`IIKO2 ${JSON.stringify(orderCheckJson)}`)
 
 
 
@@ -205,6 +204,7 @@ class Order {
         while(orderCheckJson.orders[0].creationStatus === "InProgress" )
 
         if(orderCheckJson.orders[0].creationStatus === "Error"){
+            console.log(`IIKO ERROR ${JSON.stringify(orderCheckJson)}`)
             let text
             if(typeof orderCheckJson.orders[0].errorInfo === "object"){
                 text = JSON.stringify(orderCheckJson.orders[0].errorInfo)
@@ -218,6 +218,8 @@ class Order {
             }
 
         }
+
+
 
 
         return {
@@ -1364,6 +1366,8 @@ class Order {
             "refType": "qrcId"
         }
 
+        console.log("SBP_RETURN_START:" + JSON.stringify(body))
+
         await this.waitASec(30000)
         const result = await fetch(process.env.SBP_HOST + "/refund", {
             method: 'post',
@@ -1372,6 +1376,8 @@ class Order {
                 'Content-Type': 'application/json',
                 "Authorization": "Bearer " + process.env.SBP_BEARER  },
         })
+        const json = await result.json()
+        console.log("SBP_RETURN_REZULT:" + JSON.stringify(json))
 
         const order = await this.OrderModel.findOne({
             where: {
@@ -1398,7 +1404,6 @@ class Order {
 
         }
 
-        const json = await result.json()
         order.sbp_unswer = json
         return order
 
