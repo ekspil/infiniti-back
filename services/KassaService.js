@@ -2,13 +2,14 @@ const ItemDTO = require("../models/dto/item")
 const fetch = require("node-fetch")
 
 class Order {
-    constructor({UserModel, ProductModel, ItemModel, OrderModel, OrderItemsModel, KioskModel, io}) {
+    constructor({UserModel, ProductModel, ItemModel, OrderModel, OrderItemsModel, KioskModel, BankSettingsModel, io}) {
         this.UserModel = UserModel
         this.ProductModel = ProductModel
         this.ItemModel = ItemModel
         this.OrderModel = OrderModel
         this.OrderItemsModel = OrderItemsModel
         this.Kiosk = KioskModel
+        this.BankSettings = BankSettingsModel
         this.io = io
         this.guid = this.guid.bind(this)
         this.sendToIiko = this.sendToIiko.bind(this)
@@ -1322,14 +1323,25 @@ class Order {
 // Оплата безналом
     async paySBP(data) {
 
+        const kiosk = await this.Kiosk.findOne({
+            where: {
+                name: data.kiosk
+            }
+        })
+        let bankSettings = await this.BankSettings.findOne({
+            where: {
+                kioskId: String(kiosk.id)
+            }
+        })
+        if(!bankSettings) bankSettings = {}
         const sum = data.items.reduce((sum, current) => {
             return sum + current.count * current.price
         }, 0);
 
         const body = {
-            "extEntityId": process.env.SBP_EXT_ENTITI_ID,
-            "merchantId": process.env.SBP_MERCHANT_ID,
-            "account": process.env.SBP_ACCOUNT,
+            "extEntityId": bankSettings.entity || process.env.SBP_EXT_ENTITI_ID,
+            "merchantId": bankSettings.merchant || process.env.SBP_MERCHANT_ID,
+            "account": bankSettings.account || process.env.SBP_ACCOUNT,
             //"accAlias": "e5a4f3fe-a6c0-41b0-b814-ba085f4ede7a",
             "amount": sum * 100,
             "paymentPurpose": "Оплата по заказу с киоска",
@@ -1342,11 +1354,11 @@ class Order {
             body: JSON.stringify(body) ,
             headers: {
                 'Content-Type': 'application/json',
-                "Authorization": "Bearer " + process.env.SBP_BEARER  },
+                "Authorization": "Bearer " +  bankSettings.token || process.env.SBP_BEARER  },
         })
 
         const json = await result.json()
-        json.imageBMP = process.env.SERVICE_ADDRESS + "/api/qr/image/" + json.qrcId
+        json.imageBMP = process.env.SERVICE_ADDRESS + "/api/qr/image/"+ String(kiosk.id) + "/" + json.qrcId
 
 
 
@@ -1412,11 +1424,19 @@ class Order {
     }
 
 
-    async getSbpImg(qrId, request, reply){
+    async getSbpImg(qrId, request, reply, kioskId){
+
+        let bankSettings = await this.BankSettings.findOne({
+            where: {
+                kioskId: String(kioskId)
+            }
+        })
+        if(!bankSettings) bankSettings = {}
+
         const res = await fetch(process.env.SBP_HOST + "/qr/image/" + qrId, {
             method: 'get',
             headers: {
-                "Authorization": "Bearer " + process.env.SBP_BEARER  },
+                "Authorization": "Bearer " + bankSettings.token || process.env.SBP_BEARER  },
         })
 
         reply.send(res.body)

@@ -17,6 +17,7 @@
     "fastify-plugin": "^2.0.0",
     "fastify-socket.io": "0.0.4",
     "fastify-static": "^3.3.0",
+    "log4js-node-yandex-cloud-logging": "^1.0.4",
     "mssql": "^6.2.1",
     "node-cron": "^2.0.3",
     "node-fetch": "^2.6.7",

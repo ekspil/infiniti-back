@@ -9,7 +9,7 @@ const ItemDTO = require("../models/dto/item")
 const ProductDTO = require("../models/dto/product")
 
 
-module.exports = async function (fastify, opts) {
+module.exports = async function (fastify, opts, logger) {
 
   const {order, db, fetch, kassa, atol} = opts
 
@@ -174,9 +174,9 @@ module.exports = async function (fastify, opts) {
     return await kassa.paySBPApply(request.body)
   })
 
-  fastify.get('/api/qr/image/:qrId', async (request, reply) => {
+  fastify.get('/api/qr/image/:kioskId/:qrId', async (request, reply) => {
 
-    await kassa.getSbpImg(request.params.qrId, request, reply)
+    await kassa.getSbpImg(request.params.qrId, request, reply, request.params.kioskId)
 
   })
 

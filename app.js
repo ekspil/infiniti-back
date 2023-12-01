@@ -5,6 +5,51 @@ const AutoLoad = require('fastify-autoload')
 const Sequelize = require("sequelize")
 const fetch = require("node-fetch")
 const cron = require("node-cron")
+var log4js = require("log4js");
+
+log4js.configure({
+  appenders: {
+    yandexCloudLogging: {
+      type: 'log4js-node-yandex-cloud-logging',
+      serviceAccountID: "ajebmltab4uj5cavgh7k",
+      keyID: "ajes52h9hhba5fps387m",
+      keyData: `-----BEGIN PRIVATE KEY-----
+${process.env.LOGER_PK_1}
+KObzTBkM6x/IKPtr2JB4X9KyLek7uQCnVFJSia7PuHXBQGsBc3GvNzqX7931BXwE
+CuQGGzE3uJn9uaOvbczPVLUCRj77xYtYSTeOb8Xx6C2rK/RXLUVn+aocHHGtF2GG
+6RLiWVVuyZBZ6HKAoKTRXHBaLkSZmaE6fpKRo+t/MRq/oWsgrqJsukQvnX6PJr0Y
+PHHIoyT0e3+5odk3F7I/MJjYiAw7a6vn2swKCTkN7H4bJWzA7r17PddykHYcXVcP
+w8r5H/ObSrs+lb9dnKG6BTGtcOrnPgZm7BXvc25WzilVAm4Hk1zDaVr6TtKHQipC
+5IJoW311AgMBAAECggEAAQa2pu5vLXWPB7mrkku4z27OsAKyvDib2lGP5vBWhRPq
+wimDYi0QbwgJvXHPfITRq6o1ieJauIoAAbmz7jn50lLrbbNGOWaKjUvqyhfdpdOG
+BgkJBaYnH5s7avO07WLIjmZiX0udqM1UZKNXdM/HEwr6tmwsiy9JdJhLQ0/U/rBU
+GiNd7Pgg6QTm3OFuVTvb3ILQNmCws6YWt8+KeADS3KL0+aqL1qanLG/sj4WS8ur5
+gA0SqLE5HgJxe2g2GhnkrwTvAacmqn9KM/LYnNr+TOpsMuP9XrTBFh1lk7XTAh3E
+Qkb/4k+O0VHnLWfoICnrxbZcca19wOxgjvYYzw4aSQKBgQDZyUlQ7J5LSzFrELqV
+/k9CJ2wODi+14gGOui6PBFBjvlf1r9hVUmQnBlVgUGr5+Jdd+6kwiPQn9a5gOWWs
+Dp2KX9ktlh/EyagJXUAppPqv3Zb8WefOcNoGmRPuHBQC6Gv+kJKFqJVIHf/IK+ve
+U/+Ku37HgIcvLqztk+Lg56+VfQKBgQDcU7D+/bVI5o9IykbNpkG3EHxXcwbJlwe2
+0YMO5mw1tkmZNlMCAvueq1Xr/WOnqLL8QIQUSvt4vKzRRLpDdJVFeJ4aFXdzzjb0
+u4d8uI0h3rv8LrC/qEPKEeriYiqtJXwMCkdtBLRxw9/CqSX4pWAzycv009KbKdXr
+PVbWCvWpWQKBgHgllp/hWdaZ7fJt8TGscZdCXldGtkV2IHvX9LWLoLnWGXp9/y/a
+20u4L8OJueqbnQ4JNyaCd4fP/tow8AlCquDazdpbVr1erqgz3KDc1jvNWG1xP/Pg
+yDcZnigfL18HUATJRzwba/e0LRcGPAKUfobPtzpiirGZ42bRzjlbN7+VAoGBAKGn
+0kS1N87eQ6EfsOVwp+S+dsze+8rrQmCzxlonXJvoPIXqourl72JSyf8VconwMCr+
+1yngfjPvE0mUCKo3ntJTFoWC3JseYZodAeLTsdF5ECqOw2ZL+jkH/nPNnQxfZW2c
+GR33BsI1+jZkTxTpmfVFiZz/0hXAk1E/Nzhi4C45AoGBAL6BY9ZyhG9qmLMTwzfV
+1bTGjBQAeXeFhLwcKipt7TM6rNTzcCrx82RQb7VWesZAh367qMMd3a1A1IQYUo5W
+LDtOfmnqPvXKaRp3kKQDtVBPv5vh13XTtcFMkPKMOgjT9wXB253Viv2VnNsP3nx3
+vAwvjzydLj6XIiB/Oqjp5GQv
+-----END PRIVATE KEY-----`,
+      destination: "e23jpinfkns8ss35irto"
+    }
+  },
+  categories: {
+    default: { appenders: ['yandexCloudLogging'], level: 'info' }
+  }
+});
+
+const logger = log4js.getLogger();
 
 module.exports = async function (fastify, opts) {
   // Place here your custom code!
@@ -36,6 +81,7 @@ module.exports = async function (fastify, opts) {
   const ProductMods = require("./models/sequelize/ProductMods")
   const Corners = require("./models/sequelize/Corners")
   const Kiosks = require("./models/sequelize/Kiosks")
+  const BankSettings = require("./models/sequelize/BankSettings")
   const Helpers = require("./models/sequelize/Helpers")
   global.Orders = []
   global.KassaOrders = []
@@ -63,6 +109,7 @@ module.exports = async function (fastify, opts) {
   const ProductModModel = sequelize.define("product_mods", ProductMods)
   const CornerModel = sequelize.define("corners", Corners)
   const KioskModel = sequelize.define("kiosks", Kiosks)
+  const BankSettingsModel = sequelize.define("bank_settings", BankSettings)
   const HelperModel = sequelize.define("helpers", Helpers)
 
   ProductModel.belongsTo(ProductGroupModel, {
@@ -78,7 +125,7 @@ module.exports = async function (fastify, opts) {
     as: "items"
   })
   //
- // await sequelize.sync({alter: true})
+  //await sequelize.sync({alter: true})
   // await sequelize.sync({force: true})
   // const us = [
   //   {name: "Ефремов Алексей", login: "admin@admin.ru", password: "admin", role: "ADMIN"},
@@ -159,7 +206,9 @@ module.exports = async function (fastify, opts) {
     ProductModModel,
     CornerModel,
     HelperModel,
-    io: fastify.io
+    BankSettingsModel,
+    io: fastify.io,
+    logger
   })
   opts.darall = new Darall()
   opts.kassa = new Kassa({
@@ -175,7 +224,9 @@ module.exports = async function (fastify, opts) {
     CornerModel,
     HelperModel,
     KioskModel,
-    io: fastify.io
+    BankSettingsModel,
+    io: fastify.io,
+    logger
   })
   opts.atol = new Atol({
     UserModel,
@@ -189,7 +240,9 @@ module.exports = async function (fastify, opts) {
     TimerModel,
     CornerModel,
     HelperModel,
-    io: fastify.io
+    BankSettingsModel,
+    io: fastify.io,
+    logger
   })
 
   opts.db = new DB({
@@ -205,7 +258,9 @@ module.exports = async function (fastify, opts) {
     CornerModel,
     HelperModel,
     OrderModel,
-    io: fastify.io
+    BankSettingsModel,
+    io: fastify.io,
+    logger
   })
 
   opts.fetch = fetch
@@ -220,7 +275,9 @@ module.exports = async function (fastify, opts) {
     TimerModel,
     CornerModel,
     HelperModel,
-    io: fastify.io
+    BankSettingsModel,
+    io: fastify.io,
+    logger
   })
 
   fastify.register(require('fastify-static'), {
@@ -262,13 +319,13 @@ module.exports = async function (fastify, opts) {
   // through your application
   await fastify.register(AutoLoad, {
     dir: path.join(__dirname, 'plugins'),
-    options: Object.assign({}, opts)
+    options: Object.assign({}, opts, logger)
   })
 
   // This loads all plugins defined in routes
   // define your routes in one of these
   await fastify.register(AutoLoad, {
     dir: path.join(__dirname, 'routes'),
-    options: Object.assign({}, opts)
+    options: Object.assign({}, opts, logger)
   })
 }
