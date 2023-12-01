@@ -9,9 +9,10 @@ const ItemDTO = require("../models/dto/item")
 const ProductDTO = require("../models/dto/product")
 
 
-module.exports = async function (fastify, opts, logger) {
+module.exports = async function (fastify, opts) {
 
-  const {order, db, fetch, kassa, atol} = opts
+  const {order, db, fetch, kassa, atol, logger} = opts
+  logger.info("KASSA API MOUNTED")
 
 
   fastify.get('/api/kassa/create', async (request, reply) => {
@@ -168,8 +169,7 @@ module.exports = async function (fastify, opts, logger) {
 
 
   fastify.post('/api/c2b_payment', async (request, reply) => {
-
-    console.log("SBP_PAYMENT:" + JSON.stringify(request.body))
+    logger.info("SBP_PAYMENT:" + JSON.stringify(request.body))
 
     return await kassa.paySBPApply(request.body)
   })

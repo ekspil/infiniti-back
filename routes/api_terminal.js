@@ -10,9 +10,9 @@ const HelperDTO = require("../models/dto/helper")
 
 
 
-module.exports = async function (fastify, opts, logger) {
+module.exports = async function (fastify, opts) {
 
-  const {order, db, fetch, darall} = opts
+  const {order, db, fetch, darall, logger} = opts
 
 
   fastify.get('/api/terminal/ext/new', async (request, reply) => {

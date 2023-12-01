@@ -279,6 +279,7 @@ module.exports = async function (fastify, opts) {
     io: fastify.io,
     logger
   })
+  opts.logger = logger
 
   fastify.register(require('fastify-static'), {
     root: path.join(__dirname, 'public'),
@@ -319,13 +320,13 @@ module.exports = async function (fastify, opts) {
   // through your application
   await fastify.register(AutoLoad, {
     dir: path.join(__dirname, 'plugins'),
-    options: Object.assign({}, opts, logger)
+    options: Object.assign({}, opts)
   })
 
   // This loads all plugins defined in routes
   // define your routes in one of these
   await fastify.register(AutoLoad, {
     dir: path.join(__dirname, 'routes'),
-    options: Object.assign({}, opts, logger)
+    options: Object.assign({}, opts)
   })
 }

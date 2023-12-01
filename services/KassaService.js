@@ -2,7 +2,7 @@ const ItemDTO = require("../models/dto/item")
 const fetch = require("node-fetch")
 
 class Order {
-    constructor({UserModel, ProductModel, ItemModel, OrderModel, OrderItemsModel, KioskModel, BankSettingsModel, io}) {
+    constructor({UserModel, ProductModel, ItemModel, OrderModel, OrderItemsModel, KioskModel, BankSettingsModel, io, logger}) {
         this.UserModel = UserModel
         this.ProductModel = ProductModel
         this.ItemModel = ItemModel
@@ -11,6 +11,7 @@ class Order {
         this.Kiosk = KioskModel
         this.BankSettings = BankSettingsModel
         this.io = io
+        this.logger = logger
         this.guid = this.guid.bind(this)
         this.sendToIiko = this.sendToIiko.bind(this)
         this.closeIikoOrder = this.closeIikoOrder.bind(this)
@@ -21,6 +22,8 @@ class Order {
         this.interval = setInterval(()=>{
             global.iikoToken = null
         }, 300000)
+
+        this.logger.info("KASSA SERVICE MOUNTED")
     }
 
     async ExecuteCommand(Data, otherServer){
@@ -174,7 +177,7 @@ class Order {
                 text: `IIKO_ERROR: ${orderSendJson.error}: ${orderSendJson.errorDescription}`
             }
         }
-        console.log(`IIKO1 ${JSON.stringify(orderSendJson)}`)
+        this.logger.info(`IIKO1 ${kiosk.name} ${JSON.stringify(order)}  ${JSON.stringify(orderSendJson)}`)
         //await this.waitASec(3000)
 
         const checkBody = {
@@ -205,7 +208,7 @@ class Order {
         while(orderCheckJson.orders[0].creationStatus === "InProgress" )
 
         if(orderCheckJson.orders[0].creationStatus === "Error"){
-            console.log(`IIKO ERROR ${JSON.stringify(orderCheckJson)}`)
+            this.logger.info(`IIKO ERROR ${kiosk.name} ${JSON.stringify(order)} ${JSON.stringify(orderCheckJson)}`)
             let text
             if(typeof orderCheckJson.orders[0].errorInfo === "object"){
                 text = JSON.stringify(orderCheckJson.orders[0].errorInfo)
@@ -289,7 +292,7 @@ class Order {
 
 
 
-            console.log(`IIKO3 ${JSON.stringify(orderCloseJson)}`)
+            this.logger.info(`IIKO3 ${JSON.stringify(order.dataValues)} ${JSON.stringify(orderCloseJson)}`)
             return {
                 error: null,
                 text: "SUCCESS",
@@ -1378,7 +1381,7 @@ class Order {
             "refType": "qrcId"
         }
 
-        console.log("SBP_RETURN_START:" + JSON.stringify(body))
+        this.logger.info("SBP_RETURN_START:" + JSON.stringify(body))
 
         await this.waitASec(30000)
         const result = await fetch(process.env.SBP_HOST + "/refund", {
@@ -1389,7 +1392,7 @@ class Order {
                 "Authorization": "Bearer " + process.env.SBP_BEARER  },
         })
         const json = await result.json()
-        console.log("SBP_RETURN_REZULT:" + JSON.stringify(json))
+        this.logger.info("SBP_RETURN_RESULT:" + JSON.stringify(json))
 
         const order = await this.OrderModel.findOne({
             where: {
