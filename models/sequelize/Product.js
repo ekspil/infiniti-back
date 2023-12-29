@@ -37,6 +37,9 @@ const Product = {
     mods: {
         type: Sequelize.DataTypes.ARRAY(Sequelize.DataTypes.INTEGER)
     },
+    groups: {
+        type: Sequelize.DataTypes.ARRAY(Sequelize.DataTypes.INTEGER)
+    },
     station: {
         type: Sequelize.DataTypes.INTEGER,
     },

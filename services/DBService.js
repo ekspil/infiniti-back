@@ -204,6 +204,7 @@ class DB {
             product.hidden = data.hidden
             product.priority = data.priority
             product.codeIiko = data.codeIiko
+            product.groups = data.groups
             return await product.save()
         }
     }

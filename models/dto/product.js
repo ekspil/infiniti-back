@@ -2,7 +2,7 @@
 
 class Product {
 
-    constructor({id, code, name, corner, items, station, price, group_id, mods, archive, img, coupon, hidden, couponPrice, blocked, priority, priceVip, codeIiko}) {
+    constructor({id, code, name, corner, items, station, price, group_id, groups, mods, archive, img, coupon, hidden, couponPrice, blocked, priority, priceVip, codeIiko}) {
         this.id = id
         this.code = code
         this.codeIiko = codeIiko
@@ -21,6 +21,7 @@ class Product {
         this.img = img
         this.priority = priority
         this.group_id = group_id
+        this.groups = groups
     }
 }
 
