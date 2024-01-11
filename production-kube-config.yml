@@ -23,7 +23,7 @@ spec:
     spec:
       containers:
         - name: kiosk-back
-          image: cr.yandex/crpbchff05ai3nceeln1/kiosk-back:1.0.75
+          image: cr.yandex/crpbchff05ai3nceeln1/kiosk-back:1.0.76
           ports:
             - containerPort: 3000
           readinessProbe:

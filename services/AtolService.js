@@ -62,6 +62,7 @@ class AtolService {
 
 
   async billAction(data, action, kiosk) {
+      try {
       if(!this.token[kiosk.atolInn]) {
           this.token[kiosk.atolInn] = await this.getToken(kiosk.atolLogin, kiosk.atolPassword)
       }
@@ -114,7 +115,7 @@ class AtolService {
 
 
 
-      try {
+
 
           const result = await fetch(`https://online.atol.ru/possystem/v4/${kiosk.atolGroup || process.env.ATOL_GROUP}/${action}`, {
               method: 'post',
