@@ -2,12 +2,12 @@
 const fetch = require("node-fetch")
 
 class AtolService {
-    constructor() {
+    constructor({logger}) {
         this.getBillSum = this.getBillSum.bind(this)
         this.getTime = this.getTime.bind(this)
         this.billAction = this.billAction.bind(this)
         this.token = {}
-
+        this.logger = logger
         setInterval(()=>{
             this.token = {}
         }, 12 * 3600 * 1000)
@@ -114,20 +114,26 @@ class AtolService {
 
 
 
+      try {
 
+          const result = await fetch(`https://online.atol.ru/possystem/v4/${kiosk.atolGroup || process.env.ATOL_GROUP}/${action}`, {
+              method: 'post',
+              body: JSON.stringify(check),
+              headers: {
+                  'Content-Type': 'application/json; charset=utf-8',
+                  "Token": this.token[kiosk.atolInn],
+              }
+          })
 
-      const result = await fetch(`https://online.atol.ru/possystem/v4/${kiosk.atolGroup || process.env.ATOL_GROUP}/${action}`, {
-          method: 'post',
-          body: JSON.stringify(check),
-          headers: {
-              'Content-Type': 'application/json; charset=utf-8',
-              "Token": this.token[kiosk.atolInn],
-          }
-      })
+          const resultJson = await result.json()
+          this.logger.info("ATOL_BILL_SENDING: " + JSON.stringify(resultJson))
+          return resultJson
+      }
+      catch (e) {
+          this.logger.error("ATOL_BILL_SENDING_ERROR: " + JSON.stringify({error: "ATOL_BILL_SENDING_ERROR: ", message: e.message}))
+          return {error: true, message: e.message}
+      }
 
-      const resultJson = await result.json()
-
-      return resultJson
   }
 
 }
