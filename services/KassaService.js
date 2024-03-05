@@ -208,7 +208,7 @@ class Order {
         while(orderCheckJson.orders[0].creationStatus === "InProgress" )
 
         if(orderCheckJson.orders[0].creationStatus === "Error"){
-            this.logger.info(`IIKO ERROR ${kiosk.name} ${JSON.stringify(order)} ${JSON.stringify(orderCheckJson)}`)
+            this.logger.error(`IIKO ERROR ${kiosk.name} ${JSON.stringify(order)} ${JSON.stringify(orderCheckJson)}`)
             let text
             if(typeof orderCheckJson.orders[0].errorInfo === "object"){
                 text = JSON.stringify(orderCheckJson.orders[0].errorInfo)
@@ -337,7 +337,7 @@ class Order {
 
         }
         catch (e) {
-            console.log(`IIKO_AUTH_ERROR ${e.message}`)
+            this.logger.error(`IIKO_AUTH_ERROR ${e.message}`)
             global.iikoToken = ""
         }
 

@@ -24,6 +24,9 @@ const Product = {
     img: {
         type: Sequelize.DataTypes.STRING,
     },
+    description: {
+        type: Sequelize.DataTypes.STRING,
+    },
     price: {
         type: Sequelize.DataTypes.FLOAT,
     },
@@ -36,6 +39,25 @@ const Product = {
     },
     mods: {
         type: Sequelize.DataTypes.ARRAY(Sequelize.DataTypes.INTEGER)
+    },
+    helpers: {
+        type: Sequelize.DataTypes.ARRAY(Sequelize.DataTypes.INTEGER)
+    },
+    des_k: {
+        type: Sequelize.DataTypes.FLOAT,
+        field: "des_k"
+    },
+    des_p: {
+        type: Sequelize.DataTypes.FLOAT,
+        field: "des_p"
+    },
+    des_l: {
+        type: Sequelize.DataTypes.FLOAT,
+        field: "des_l"
+    },
+    des_c: {
+        type: Sequelize.DataTypes.FLOAT,
+        field: "des_c"
     },
     groups: {
         type: Sequelize.DataTypes.ARRAY(Sequelize.DataTypes.INTEGER)

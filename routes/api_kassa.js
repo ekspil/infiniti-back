@@ -29,7 +29,7 @@ module.exports = async function (fastify, opts) {
         throw new Error("Ошибка записи заказа в БД")
       }
       if(order.error === "IIKO_ERROR"){
-        console.log("IIKO_ERROR: " + JSON.stringify(order.text))
+        logger.error("IIKO_ERROR: " + JSON.stringify(order.text))
         throw new Error(JSON.stringify(order.text))
       }
 
@@ -50,7 +50,7 @@ module.exports = async function (fastify, opts) {
         throw new Error("Ошибка записи заказа в БД")
       }
       if(order.error === "IIKO_ERROR"){
-        console.log("IIKO_ERROR: " + JSON.stringify(order.text))
+        logger.error("IIKO_ERROR: " + JSON.stringify(order.text))
         throw new Error(JSON.stringify(order.text))
       }
 

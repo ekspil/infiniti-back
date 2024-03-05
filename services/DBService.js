@@ -205,6 +205,12 @@ class DB {
             product.priority = data.priority
             product.codeIiko = data.codeIiko
             product.groups = data.groups
+            product.helpers = data.helpers
+            product.description = data.description
+            product.des_c = data.des_c
+            product.des_k = data.des_k
+            product.des_p = data.des_p
+            product.des_l = data.des_l
             return await product.save()
         }
     }
